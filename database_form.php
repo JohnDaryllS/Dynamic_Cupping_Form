@@ -254,23 +254,23 @@ $total_count = 0;
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirm Deletion</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this cupping form? This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
-                </div>
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this cupping form? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
             </div>
         </div>
     </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="loading.js"></script>
@@ -319,28 +319,53 @@ $total_count = 0;
     });
 });
 
-        // Delete handler
-        let deleteId = null;
-        document.querySelectorAll('.delete-entry').forEach(btn => {
-            btn.addEventListener('click', function() {
-                deleteId = this.getAttribute('data-id');
-                new bootstrap.Modal(document.getElementById('deleteModal')).show();
-            });
-        });
+        // In database_form.php, update the delete handler
+let deleteId = null;
+document.querySelectorAll('.delete-entry').forEach(btn => {
+    btn.addEventListener('click', function() {
+        deleteId = this.getAttribute('data-id');
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    });
+});
 
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            if (deleteId) {
-                fetch('delete_cupping.php?id=' + deleteId, { method: 'POST' })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Error: ' + (data.message || 'Failed to delete'));
-                        }
-                    });
+document.getElementById('confirmDelete').addEventListener('click', function() {
+    if (deleteId) {
+        fetch('delete_cupping.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + deleteId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message and reload
+                const successAlert = `
+                    <div class="alert alert-success alert-dismissible fade show">
+                        Cupping form deleted successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                document.querySelector('.content-wrapper').insertAdjacentHTML('afterbegin', successAlert);
+                
+                // Close modal and reload data
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                deleteModal.hide();
+                
+                // Reload the page after 1 second
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                alert('Error: ' + (data.message || 'Failed to delete'));
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting form. Please try again.');
         });
+    }
+});
     });
     </script>
 </body>

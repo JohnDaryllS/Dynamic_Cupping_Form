@@ -8,6 +8,8 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "user") {
     exit();
 }
 
+date_default_timezone_set('Asia/Manila');
+
 // Check if form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Initialize an array to store all form data

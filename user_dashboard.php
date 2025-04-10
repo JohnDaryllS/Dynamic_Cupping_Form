@@ -1092,10 +1092,16 @@ $full_name = $user['full_name'] ?? '';
             // Create FormData object
             const formData = new FormData(this);
             
-            // Submit via AJAX
+            // Convert FormData to URL-encoded format
+            const urlEncodedData = new URLSearchParams(formData).toString();
+            
+            // Submit via fetch
             fetch('process_cupping.php', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: urlEncodedData
             })
             .then(response => {
                 if (response.redirected) {

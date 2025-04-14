@@ -16,29 +16,31 @@ if (!isset($_POST['id'])) {
 }
 
 $form_id = (int)$_POST['id'];
-// Add this before the delete statement
-$check = $conn->prepare("SELECT id FROM cupping_forms WHERE id = ?");
-$check->bind_param("i", $form_id);
-$check->execute();
-$check->store_result();
-
-if ($check->num_rows === 0) {
-    echo json_encode(['success' => false, 'message' => 'Form not found']);
-    exit();
-}
-$check->close();
 
 try {
+    // First check if the form exists
+    $check = $conn->prepare("SELECT id FROM cupping_forms WHERE id = ?");
+    $check->bind_param("i", $form_id);
+    $check->execute();
+    $check->store_result();
+
+    if ($check->num_rows === 0) {
+        echo json_encode(['success' => false, 'message' => 'Form not found']);
+        exit();
+    }
+    $check->close();
+
+    // Delete the form
     $stmt = $conn->prepare("DELETE FROM cupping_forms WHERE id = ?");
     $stmt->bind_param("i", $form_id);
     
     if ($stmt->execute()) {
-        echo json_encode(['success' => true]);
+        echo json_encode(['success' => true, 'message' => 'Form deleted successfully']);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Database error']);
+        echo json_encode(['success' => false, 'message' => 'Database error: ' . $stmt->error]);
     }
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 }
 exit();
 ?>

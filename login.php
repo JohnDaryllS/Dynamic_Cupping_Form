@@ -13,8 +13,9 @@ if (isset($_GET['new_user']) && isset($_SESSION['new_user_email'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $remember = isset($_POST['remember']) ? true : false;
 
-    $stmt = $conn->prepare("SELECT id, email, password, role FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, email, password, role, full_name FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -22,18 +23,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
         if (hash("sha256", $password) == $user["password"]) {
+            // Set session variables
             $_SESSION["user_id"] = $user["id"];
-            $_SESSION["full_name"] = $user["full_name"] ?? $user["email"]; // Add this line
+            $_SESSION["full_name"] = $user["full_name"] ?? $user["email"];
             $_SESSION["email"] = $user["email"];
             $_SESSION["role"] = $user["role"];
 
+            // Set cookie if "Remember Me" is checked
+            if ($remember) {
+                $cookie_value = [
+                    'user_id' => $user["id"],
+                    'token' => bin2hex(random_bytes(16)), // Generate random token
+                    'expires' => time() + (30 * 24 * 60 * 60) // 30 days
+                ];
+                
+                // Store token in database
+                $token_hash = hash("sha256", $cookie_value['token']);
+                $expires = date('Y-m-d H:i:s', $cookie_value['expires']);
+                
+                $stmt = $conn->prepare("INSERT INTO remember_tokens (user_id, token_hash, expires_at) VALUES (?, ?, ?)");
+                $stmt->bind_param("iss", $user["id"], $token_hash, $expires);
+                $stmt->execute();
+                
+                // Set cookie
+                setcookie(
+                    'remember_me',
+                    json_encode($cookie_value),
+                    $cookie_value['expires'],
+                    '/',
+                    '',
+                    isset($_SERVER['HTTPS']), // Secure if HTTPS
+                    true // HttpOnly
+                );
+            }
+
+            // Redirect based on role
             if ($user["role"] == "admin") {
                 header("Location: dashboard.php");
-                exit();
             } else {
                 header("Location: user_dashboard.php");
-                exit();
             }
+            exit();
         } else {
             $error = "Invalid credentials";
         }
@@ -151,7 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
             <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="remember">
+                <input type="checkbox" class="form-check-input" id="remember" name="remember">
                 <label class="form-check-label" for="remember">Remember me</label>
             </div>
             <button type="submit" class="btn btn-primary w-100 py-2">
@@ -209,22 +239,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (e.target === qrModal) {
                 qrModal.style.display = 'none';
             }
-        });
-    </script>
-    <script>
-        // Toggle password visibility
-        document.querySelectorAll('.toggle-password').forEach(button => {
-            button.addEventListener('click', function() {
-                const passwordInput = this.previousElementSibling;
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.replace('fa-eye', 'fa-eye-slash');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.replace('fa-eye-slash', 'fa-eye');
-                }
-            });
         });
     </script>
 </body>

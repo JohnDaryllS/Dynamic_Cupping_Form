@@ -1,5 +1,5 @@
 <?php
-session_start();
+require 'autologin.php';
 include 'db.php';
 
 if (!isset($_SESSION["role"]) || $_SESSION["role"] != "admin") {

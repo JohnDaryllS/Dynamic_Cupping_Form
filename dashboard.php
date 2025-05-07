@@ -117,7 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Specialty Coffee Depot</title>
+    <title>Admin Dashboard | SCA Cupping Form</title>
+    <link rel="shortcut icon" href="img/1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -132,8 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="sidebar-header">
-                <img src="img/image-removebg-preview.png" alt="Logo" class="sidebar-logo">
-                <h3>Specialty Coffee</h3>
+                <img src="img/1.png" alt="Logo" class="sidebar-logo">
+                <h3>SCA Cupping Form</h3>
             </div>
             <ul class="sidebar-menu">
                 <li class="active"><a href="#"><i class="fas fa-users"></i> User Management</a></li>

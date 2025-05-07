@@ -40,7 +40,8 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_me'])) {
                     $new_expires = time() + (30 * 24 * 60 * 60);
                     $stmt = $conn->prepare("UPDATE remember_tokens SET expires_at = ? 
                                           WHERE user_id = ? AND token_hash = ?");
-                    $stmt->bind_param("sis", date('Y-m-d H:i:s', $new_expires), 
+                    $new_expires_date = date('Y-m-d H:i:s', $new_expires);
+                    $stmt->bind_param("sis", $new_expires_date, 
                                      $user["id"], $token_hash);
                     $stmt->execute();
                     

@@ -79,6 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | SCA Arabica Cupping Form</title>
+    <link rel="shortcut icon" href="img/1.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -151,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body class="login-page">
     <div class="login-container">
         <div class="login-brand">
-            <img src="img/image-removebg-preview.png" alt="Specialty Coffee Depot" class="logo">
+            <img src="img/1.png" alt="Specialty Coffee Depot" class="logo">
             <h1>SCA Arabica Cupping Form</h1>
         </div>
         

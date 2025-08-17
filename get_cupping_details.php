@@ -36,6 +36,15 @@ try {
     
     $form = $result->fetch_assoc();
     
+
+    
+    // Helper function to decode JSON attributes
+    function decodeAttributes($jsonString) {
+        if (empty($jsonString)) return [];
+        $decoded = json_decode($jsonString, true);
+        return is_array($decoded) ? $decoded : [];
+    }
+    
     ob_start(); // Start output buffering
     ?>
     
@@ -51,6 +60,7 @@ try {
                         <p><strong>Submitted by:</strong> <?= htmlspecialchars($form['full_name'] ?? 'N/A') ?></p>
                         <p><strong>Submitted on:</strong> <?= $form['submission_date_formatted'] ?></p>
                         <p><strong>Cupping date:</strong> <?= $form['form_date_formatted'] ?></p>
+                        <p><strong>Form number:</strong> <?= $form['form_number'] ?></p>
                     </div>
                 </div>
             </div>
@@ -63,8 +73,7 @@ try {
                     <div class="card-body">
                         <p><strong>Table:</strong> <?= htmlspecialchars($form['table_no']) ?></p>
                         <p><strong>Batch:</strong> <?= $form['batch_number'] ?></p>
-                        <p><strong>Total Score:</strong> <span class="badge bg-success"><?= number_format($form['total_score'], 2) ?></span></p>
-                        <p><strong>Final Score:</strong> <span class="badge bg-primary"><?= number_format($form['final_score'], 2) ?></span></p>
+                        <p><strong>Sample ID:</strong> <?= htmlspecialchars($form['sample_id'] ?? 'N/A') ?></p>
                     </div>
                 </div>
             </div>
@@ -83,96 +92,95 @@ try {
                                 <thead class="table-light">
                                     <tr>
                                         <th width="20%">Attribute</th>
-                                        <th width="15%">Score</th>
-                                        <th width="25%">Details</th>
-                                        <th>Notes</th>
+                                        <th width="15%">Intensity</th>
+                                        <th width="25%">Selected Types</th>
+                                        <th>Additional Notes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <!-- Fragrance/Aroma -->
                                     <tr>
-                                        <td>Fragrance/Aroma</td>
-                                        <td><?= number_format($form['fragrance_aroma'], 2) ?></td>
+                                        <td><strong>Fragrance/Aroma</strong></td>
+                                        <td><?= $form['fragrance_intensity'] ?>/5</td>
                                         <td>
-                                            <strong>Dry:</strong> <?= $form['dry'] ?>/5<br>
-                                            <strong>Break:</strong> <?= $form['break_value'] ?>/5<br>
-                                            <strong>Qualities:</strong> 
-                                            <?= !empty($form['quality1']) ? htmlspecialchars($form['quality1']) : 'N/A' ?>
-                                            <?= !empty($form['quality2']) ? ', ' . htmlspecialchars($form['quality2']) : '' ?>
+                                            <?php 
+                                            $fragranceAttrs = decodeAttributes($form['fragrance_attributes']);
+                                            if (!empty($fragranceAttrs)) {
+                                                echo implode(', ', array_map('ucfirst', $fragranceAttrs));
+                                            } else {
+                                                echo 'None selected';
+                                            }
+                                            ?>
                                         </td>
-                                        <td><?= !empty($form['fragrance_notes']) ? htmlspecialchars($form['fragrance_notes']) : 'No notes' ?></td>
+                                        <td><?= htmlspecialchars($form['fragrance_others_text'] ?? '') ?></td>
                                     </tr>
                                     
                                     <!-- Flavor -->
                                     <tr>
-                                        <td>Flavor</td>
-                                        <td><?= number_format($form['flavor'], 2) ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['flavor_notes']) ? htmlspecialchars($form['flavor_notes']) : 'No notes' ?></td>
-                                    </tr>
-                                    
-                                    <!-- Aftertaste -->
-                                    <tr>
-                                        <td>Aftertaste</td>
-                                        <td><?= number_format($form['aftertaste'], 2) ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['aftertaste_notes']) ? htmlspecialchars($form['aftertaste_notes']) : 'No notes' ?></td>
-                                    </tr>
-                                    
-                                    <!-- Acidity -->
-                                    <tr>
-                                        <td>Acidity</td>
-                                        <td><?= number_format($form['acidity'], 2) ?></td>
-                                        <td><strong>Intensity:</strong> <?= $form['acidity_intensity'] ?>/5</td>
-                                        <td><?= !empty($form['acidity_notes']) ? htmlspecialchars($form['acidity_notes']) : 'No notes' ?></td>
+                                        <td><strong>Flavor</strong></td>
+                                        <td><?= $form['flavor_intensity'] ?>/5</td>
+                                        <td>
+                                            <?php 
+                                            $flavorAttrs = decodeAttributes($form['flavor_attributes']);
+                                            if (!empty($flavorAttrs)) {
+                                                echo implode(', ', array_map('ucfirst', $flavorAttrs));
+                                            } else {
+                                                echo 'None selected';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?= htmlspecialchars($form['flavor_others_text'] ?? '') ?></td>
                                     </tr>
                                     
                                     <!-- Body -->
                                     <tr>
-                                        <td>Body</td>
-                                        <td><?= number_format($form['body'], 2) ?></td>
-                                        <td><strong>Level:</strong> <?= $form['body_level'] ?>/5</td>
-                                        <td><?= !empty($form['body_notes']) ? htmlspecialchars($form['body_notes']) : 'No notes' ?></td>
+                                        <td><strong>Body/Mouthfeel</strong></td>
+                                        <td><?= $form['body_intensity'] ?>/5</td>
+                                        <td>
+                                            <?php 
+                                            $bodyTypes = decodeAttributes($form['body_type']);
+                                            if (!empty($bodyTypes)) {
+                                                echo implode(', ', array_map('ucfirst', $bodyTypes));
+                                            } else {
+                                                echo 'None selected';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?= htmlspecialchars($form['body_others_text'] ?? '') ?></td>
                                     </tr>
                                     
-                                    <!-- Uniformity -->
+                                    <!-- Acidity -->
                                     <tr>
-                                        <td>Uniformity</td>
-                                        <td><?= $form['uniformity'] ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['uniformity_notes']) ? htmlspecialchars($form['uniformity_notes']) : 'No notes' ?></td>
-                                    </tr>
-                                    
-                                    <!-- Clean Cup -->
-                                    <tr>
-                                        <td>Clean Cup</td>
-                                        <td><?= $form['clean_cup'] ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['clean_cup_notes']) ? htmlspecialchars($form['clean_cup_notes']) : 'No notes' ?></td>
-                                    </tr>
-                                    
-                                    <!-- Balance -->
-                                    <tr>
-                                        <td>Balance</td>
-                                        <td><?= number_format($form['balance'], 2) ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['balance_notes']) ? htmlspecialchars($form['balance_notes']) : 'No notes' ?></td>
-                                    </tr>
-                                    
-                                    <!-- Overall -->
-                                    <tr>
-                                        <td>Overall</td>
-                                        <td><?= number_format($form['overall'], 2) ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['overall_notes']) ? htmlspecialchars($form['overall_notes']) : 'No notes' ?></td>
+                                        <td><strong>Acidity</strong></td>
+                                        <td><?= $form['acidity_intensity'] ?>/5</td>
+                                        <td>
+                                            <?php 
+                                            $acidityTypes = decodeAttributes($form['acidity_type']);
+                                            if (!empty($acidityTypes)) {
+                                                echo implode(', ', array_map('ucfirst', $acidityTypes));
+                                            } else {
+                                                echo 'None selected';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?= htmlspecialchars($form['acidity_others_text'] ?? '') ?></td>
                                     </tr>
                                     
                                     <!-- Sweetness -->
                                     <tr>
-                                        <td>Sweetness</td>
-                                        <td><?= $form['sweetness'] ?></td>
-                                        <td>-</td>
-                                        <td><?= !empty($form['sweetness_notes']) ? htmlspecialchars($form['sweetness_notes']) : 'No notes' ?></td>
+                                        <td><strong>Sweetness</strong></td>
+                                        <td><?= $form['sweetness_intensity'] ?>/5</td>
+                                        <td>
+                                            <?php 
+                                            $sweetnessTypes = decodeAttributes($form['sweetness_type']);
+                                            if (!empty($sweetnessTypes)) {
+                                                echo implode(', ', array_map('ucfirst', $sweetnessTypes));
+                                            } else {
+                                                echo 'None selected';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?= htmlspecialchars($form['sweetness_others_text'] ?? '') ?></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -181,42 +189,40 @@ try {
                 </div>
             </div>
         </div>
-        
-        <!-- Defects Section -->
+
+        <!-- General Notes -->
+        <?php if (!empty($form['general_notes'])): ?>
         <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-warning text-dark">
-                        <h5 class="mb-0">Defects</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Defective Cups:</strong> <?= $form['defective_cups'] ?></p>
-                        <p><strong>Defect Intensity:</strong> <?= $form['defect_intensity'] ?></p>
-                        <p><strong>Defect Points:</strong> <?= $form['defect_points'] ?></p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Comments Section -->
-            <div class="col-md-6">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Additional Comments</h5>
+                        <h5 class="mb-0">General Notes</h5>
                     </div>
                     <div class="card-body">
-                        <?= !empty($form['comments']) ? nl2br(htmlspecialchars($form['comments'])) : '<p class="text-muted">No additional comments</p>' ?>
+                        <p><?= nl2br(htmlspecialchars($form['general_notes'])) ?></p>
                     </div>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
+        
+
     </div>
     
     <?php
-    $output = ob_get_clean();
-    echo $output;
+    $content = ob_get_clean(); // Get the buffered content
+    
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'content' => $content
+    ]);
     
 } catch (Exception $e) {
-    ob_end_clean();
-    echo '<div class="alert alert-danger m-4">Error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
 }
 ?>

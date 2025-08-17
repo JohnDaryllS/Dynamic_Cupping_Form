@@ -12,79 +12,121 @@ date_default_timezone_set('Asia/Manila');
 
 // Check if form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Initialize an array to store all form data
-    $formData = [
-        'user_id' => $_SESSION["user_id"],
-        'user_name' => $_SESSION["email"],
-        'submission_date' => date('Y-m-d H:i:s'),
-        'form_date' => $_POST['date'] ?? '',
-        'table_no' => $_POST['table_no'] ?? '',
-        'batch_number' => $_POST['batch_number'] ?? 1,
-        // Main attributes
-        'fragrance_aroma' => $_POST['fragrance_aroma'] ?? 0,
-        'dry' => $_POST['dry'] ?? 3,
-        'break_value' => $_POST['break'] ?? 3,
-        'quality1' => $_POST['quality1'] ?? '',
-        'quality2' => $_POST['quality2'] ?? '',
-        'fragrance_notes' => $_POST['fragrance_notes'] ?? '',
-        'flavor' => $_POST['flavor'] ?? 0,
-        'flavor_notes' => $_POST['flavor_notes'] ?? '',
-        'aftertaste' => $_POST['aftertaste'] ?? 0,
-        'aftertaste_notes' => $_POST['aftertaste_notes'] ?? '',
-        'acidity' => $_POST['acidity'] ?? 0,
-        'acidity_intensity' => $_POST['acidity_intensity'] ?? 3,
-        'acidity_notes' => $_POST['acidity_notes'] ?? '',
-        'body' => $_POST['body'] ?? 0,
-        'body_level' => $_POST['body_level'] ?? 3,
-        'body_notes' => $_POST['body_notes'] ?? '',
-        'uniformity' => $_POST['uniformity'] ?? 10,
-        'uniformity_notes' => $_POST['uniformity_notes'] ?? '',
-        'clean_cup' => $_POST['clean_cup'] ?? 10,
-        'clean_cup_notes' => $_POST['clean_cup_notes'] ?? '',
-        'overall' => $_POST['overall'] ?? 0,
-        'overall_notes' => $_POST['overall_notes'] ?? '',
-        'balance' => $_POST['balance'] ?? 0,
-        'balance_notes' => $_POST['balance_notes'] ?? '',
-        'sweetness' => $_POST['sweetness'] ?? 10,
-        'sweetness_notes' => $_POST['sweetness_notes'] ?? '',
-        'defective_cups' => $_POST['defective_cups'] ?? 0,
-        'defect_intensity' => $_POST['defect_intensity'] ?? 0,
-        'defect_points' => $_POST['defect_points'] ?? 0,
-        'total_score' => $_POST['total_score'] ?? 0,
-        'final_score' => $_POST['final_score'] ?? 0,
-        'comments' => $_POST['comments'] ?? ''
-    ];
-
-    // Prepare SQL statement
-    $columns = implode(', ', array_keys($formData));
-    $placeholders = implode(', ', array_fill(0, count($formData), '?'));
     
-    $sql = "INSERT INTO cupping_forms ($columns) VALUES ($placeholders)";
+    // Log the POST data for debugging
+    error_log("Form submission received: " . print_r($_POST, true));
     
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        $_SESSION['form_error'] = "Database error: " . $conn->error;
-        header("Location: user_dashboard.php");
-        exit();
-    }
+    // Process single form submission
+    $form_number = $_POST['form_number'] ?? 1;
+    $formData = extractFormData($form_number, $_POST);
     
-    // Bind parameters - we need to specify types for each parameter
-    $types = str_repeat('s', count($formData)); // All as strings for simplicity
-    $stmt->bind_param($types, ...array_values($formData));
+    // Log the extracted form data for debugging
+    error_log("Extracted form data: " . print_r($formData, true));
     
-    if ($stmt->execute()) {
-        $_SESSION['form_success'] = "Cupping form submitted successfully!";
-        header("Location: user_dashboard.php");
-        exit();
+    if ($formData) {
+        // Prepare SQL statement
+        $columns = implode(', ', array_keys($formData));
+        $placeholders = implode(', ', array_fill(0, count($formData), '?'));
+        
+        $sql = "INSERT INTO cupping_forms ($columns) VALUES ($placeholders)";
+        
+        // Log the SQL for debugging
+        error_log("SQL Query: " . $sql);
+        
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            $error_msg = "Database error: " . $conn->error;
+            error_log($error_msg);
+            $_SESSION['form_error'] = $error_msg;
+            echo json_encode(['success' => false, 'message' => $error_msg]);
+            exit();
+        }
+        
+        // Bind parameters
+        $types = str_repeat('s', count($formData));
+        $stmt->bind_param($types, ...array_values($formData));
+        
+        if ($stmt->execute()) {
+            $success_msg = "Form $form_number submitted successfully!";
+            error_log($success_msg);
+            $_SESSION['form_success'] = $success_msg;
+            echo json_encode(['success' => true, 'message' => $success_msg]);
+        } else {
+            $error_msg = "Error submitting form: " . $stmt->error;
+            error_log($error_msg);
+            $_SESSION['form_error'] = $error_msg;
+            echo json_encode(['success' => false, 'message' => $error_msg]);
+        }
+        $stmt->close();
     } else {
-        $_SESSION['form_error'] = "Error submitting form: " . $stmt->error;
-        header("Location: user_dashboard.php");
-        exit();
+        $error_msg = "Invalid form data";
+        error_log($error_msg);
+        $_SESSION['form_error'] = $error_msg;
+        echo json_encode(['success' => false, 'message' => $error_msg]);
     }
 } else {
     // Not a POST request
     $_SESSION['form_error'] = "Invalid request method";
     header("Location: user_dashboard.php");
     exit();
+}
+
+// Function to extract form data for a specific form number
+function extractFormData($form_number, $post_data) {
+    // Process checkbox arrays to JSON strings
+    $fragrance_attributes = isset($post_data["fragrance_attributes"]) ? 
+        (is_array($post_data["fragrance_attributes"]) ? 
+            json_encode($post_data["fragrance_attributes"]) : 
+            json_encode([$post_data["fragrance_attributes"]])) : null;
+    
+    $flavor_attributes = isset($post_data["flavor_attributes"]) ? 
+        (is_array($post_data["flavor_attributes"]) ? 
+            json_encode($post_data["flavor_attributes"]) : 
+            json_encode([$post_data["flavor_attributes"]])) : null;
+    
+    $body_type = isset($post_data["body_type"]) ? 
+        (is_array($post_data["body_type"]) ? 
+            json_encode($post_data["body_type"]) : 
+            json_encode([$post_data["body_type"]])) : null;
+    
+    $acidity_type = isset($post_data["acidity_type"]) ? 
+        (is_array($post_data["acidity_type"]) ? 
+            json_encode($post_data["acidity_type"]) : 
+            json_encode([$post_data["acidity_type"]])) : null;
+    
+    $sweetness_type = isset($post_data["sweetness_type"]) ? 
+        (is_array($post_data["sweetness_type"]) ? 
+            json_encode($post_data["sweetness_type"]) : 
+            json_encode([$post_data["sweetness_type"]])) : null;
+    
+    // Initialize an array to store all form data
+    $formData = [
+        'user_id' => $_SESSION["user_id"],
+        'user_name' => $_SESSION["email"],
+        'submission_date' => date('Y-m-d H:i:s'),
+        'form_date' => $post_data["date"] ?? '',
+        'form_number' => $form_number,
+        'table_no' => $post_data["table_no"] ?? '',
+        'batch_number' => $post_data["batch_number"] ?? 1,
+        'sample_id' => $post_data["sample_id"] ?? '',
+        'fragrance_intensity' => $post_data["fragrance_intensity"] ?? 3,
+        'fragrance_attributes' => $fragrance_attributes,
+        'fragrance_others_text' => $post_data["fragrance_others_text"] ?? '',
+        'flavor_intensity' => $post_data["flavor_intensity"] ?? 3,
+        'flavor_attributes' => $flavor_attributes,
+        'flavor_others_text' => $post_data["flavor_others_text"] ?? '',
+        'body_intensity' => $post_data["body_intensity"] ?? 3,
+        'body_type' => $body_type,
+        'body_others_text' => $post_data["body_others_text"] ?? '',
+        'acidity_intensity' => $post_data["acidity_intensity"] ?? 3,
+        'acidity_type' => $acidity_type,
+        'acidity_others_text' => $post_data["acidity_others_text"] ?? '',
+        'sweetness_intensity' => $post_data["sweetness_intensity"] ?? 3,
+        'sweetness_type' => $sweetness_type,
+        'sweetness_others_text' => $post_data["sweetness_others_text"] ?? '',
+        'general_notes' => $post_data["general_notes"] ?? ''
+    ];
+    
+    return $formData;
 }
 ?>

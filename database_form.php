@@ -15,16 +15,21 @@ $per_page = 10;
 $offset = ($page - 1) * $per_page;
 
 // Build base query
-$query = "SELECT 
+        $query = "SELECT 
             cf.id,
             cf.user_id,
             u.full_name,
             cf.user_name,
             DATE_FORMAT(cf.form_date, '%b %d, %Y') as formatted_date,
+            cf.form_number,
             cf.table_no,
             cf.batch_number,
-            cf.total_score,
-            cf.final_score,
+            cf.sample_id,
+            cf.fragrance_intensity,
+            cf.flavor_intensity,
+            cf.body_intensity,
+            cf.acidity_intensity,
+            cf.sweetness_intensity,
             COUNT(*) OVER() as total_count
           FROM cupping_forms cf
           LEFT JOIN users u ON cf.user_id = u.id";
@@ -160,6 +165,7 @@ $total_count = 0;
                                     <i class="fas fa-file-excel me-2"></i> Export Excel
                                 </a>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -174,10 +180,10 @@ $total_count = 0;
                                         <th>ID</th>
                                         <th>Full Name</th>
                                         <th>Date</th>
+                                        <th>Form #</th>
                                         <th>Table</th>
                                         <th>Batch</th>
-                                        <th>Total</th>
-                                        <th>Final</th>
+                                        <th>Sample ID</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -188,10 +194,10 @@ $total_count = 0;
                                         <td><?= $row['id'] ?></td>
                                         <td><?= htmlspecialchars($row['full_name'] ?? 'N/A') ?></td>
                                         <td><?= $row['formatted_date'] ?></td>
+                                        <td><?= $row['form_number'] ?></td>
                                         <td><?= htmlspecialchars($row['table_no']) ?></td>
                                         <td><?= $row['batch_number'] ?></td>
-                                        <td><?= number_format($row['total_score'], 2) ?></td>
-                                        <td><?= number_format($row['final_score'], 2) ?></td>
+                                        <td><?= htmlspecialchars($row['sample_id'] ?? 'N/A') ?></td>
                                         <td class="action-buttons">
                                             <button class="btn btn-sm btn-primary view-details" 
                                                     data-id="<?= $row['id'] ?>">
@@ -310,10 +316,20 @@ $total_count = 0;
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.text();
+                return response.json();
             })
-            .then(html => {
-                modalContent.innerHTML = html;
+            .then(data => {
+                if (data.success) {
+                    modalContent.innerHTML = data.content;
+                } else {
+                    modalContent.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h5>Error Loading Details</h5>
+                            <p>${data.error || 'Failed to load form details'}</p>
+                            <p>Please try again or contact support.</p>
+                        </div>
+                    `;
+                }
             })
             .catch(error => {
                 console.error('Error:', error);

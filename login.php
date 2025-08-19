@@ -15,14 +15,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $remember = isset($_POST['remember']) ? true : false;
 
-    $stmt = $conn->prepare("SELECT id, email, password, role, full_name FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, email, password, role, full_name, is_approved FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
-        if (hash("sha256", $password) == $user["password"]) {
+        
+        // Check if user is approved
+        if ($user["is_approved"] == 0) {
+            $error = "Your account is pending approval. Please contact an administrator.";
+        } elseif (hash("sha256", $password) == $user["password"]) {
             // Set session variables
             $_SESSION["user_id"] = $user["id"];
             $_SESSION["full_name"] = $user["full_name"] ?? $user["email"];
@@ -189,6 +193,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <i class="fas fa-sign-in-alt me-2"></i> Login
             </button>
         </form>
+        
+        <div class="text-center mt-3">
+            <p class="text-muted">Don't have an account? <a href="register.php" class="text-decoration-none">Register here</a></p>
+        </div>
     </div>
 
     <!-- QR Code Button -->

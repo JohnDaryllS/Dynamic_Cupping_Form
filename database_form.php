@@ -182,7 +182,7 @@ $total_count = 0;
                                         <th>Date</th>
                                         <th>Form #</th>
                                         <th>Table</th>
-                                        <th>Batch</th>
+                                        <th>Sample No.</th>
                                         <th>Sample ID</th>
                                         <th>Actions</th>
                                     </tr>

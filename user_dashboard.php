@@ -530,7 +530,7 @@ $full_name = $user['full_name'] ?? '';
         }
         
         .attribute-item.orange {
-            background-color: #FFB347;
+            background-color: #FF8C00;
             border-color: #FF8C00;
         }
         
@@ -543,11 +543,20 @@ $full_name = $user['full_name'] ?? '';
             background-color: #DDA0DD;
             border-color: #9932CC;
         }
+
+        .attribute-item.brown {
+            background-color:rgb(168, 101, 53);
+        }
         
         .attribute-item.dark-red {
             background-color: #CD5C5C;
             border-color: #B22222;
             color: white;
+        }
+
+        .attribute-item.white {
+            background-color: #FFFFFF;
+            border-color: #FFFFFF;
         }
         
         .attribute-item.dark-red[id*="spices"] {
@@ -968,17 +977,184 @@ $full_name = $user['full_name'] ?? '';
             margin-top: 10px;
         }
         
+        /* Enhanced Review Attribute Styles */
         .review-attribute-item {
-            background-color: #e9ecef;
+            background-color: #28a745;
+            color: white;
             padding: 8px 12px;
             border-radius: 6px;
             font-size: 0.9rem;
-            color: #495057;
+            font-weight: 500;
+            display: inline-block;
+            margin: 4px 6px 4px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .review-attribute-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
         
         .review-attribute-item.selected {
             background-color: #28a745;
             color: white;
+        }
+        
+        /* Fix for attribute containers positioning */
+        .review-field-value {
+            color: #212529;
+            font-size: 1rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+        }
+        
+        .review-field-value .review-attribute-item {
+            margin: 4px 6px 4px 0;
+            vertical-align: top;
+            display: inline-block;
+        }
+        
+        /* Ensure attributes are properly contained within their fields */
+        .review-field-value {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        
+        /* Ensure proper spacing in review field groups */
+        .review-field-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: start;
+        }
+        
+        /* Sample ID and Date container - full width */
+        .review-field-group.sample-info {
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .review-field-group.sample-info .review-field {
+            min-height: auto;
+            flex: 1;
+        }
+        
+        .review-field {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .review-field-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        
+        .review-field-value.empty {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .review-attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .review-attribute-item.selected {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        /* Mobile Responsive Styles for Review Modal */
+        @media (max-width: 768px) {
+            .review-modal-content {
+                margin: 2% auto;
+                width: 95%;
+                max-width: none;
+                max-height: 90vh;
+                border-radius: 8px;
+            }
+
+            .review-modal-header {
+                padding: 15px;
+                border-radius: 8px 8px 0 0;
+            }
+
+            .review-modal-header h3 {
+                font-size: 1.2rem;
+            }
+
+            .close-review-modal {
+                width: 28px;
+                height: 28px;
+                font-size: 20px;
+            }
+
+            .review-modal-body {
+                padding: 15px;
+                max-height: 70vh;
+            }
+
+            .review-modal-footer {
+                padding: 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .review-modal-footer .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .review-field-group {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .review-field {
+                padding: 12px;
+                min-height: auto;
+            }
+            
+            .review-field-value {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .review-field-value {
+                max-width: none;
+                text-align: left;
+                word-break: break-word;
+            }
+
+            .review-attribute-item {
+                max-width: none;
+                margin: 3px 4px 3px 0;
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
         }
         
         /* Badge styles */
@@ -1026,7 +1202,7 @@ $full_name = $user['full_name'] ?? '';
         <nav class="sidebar">
             <div class="sidebar-header">
                 <img src="img/1.png" alt="Logo" class="sidebar-logo">
-                <h3>SCA Cupping Form</h3>
+                <h3>Digitalized Cupping Form</h3>
             </div>
             <ul class="sidebar-menu">
                 <li class="active"><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -1061,7 +1237,7 @@ $full_name = $user['full_name'] ?? '';
                 </div>
             <?php endif; ?>
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i> Welcome to your SCA Arabica Cupping Form!
+                    <i class="fas fa-info-circle me-2"></i> Welcome to your Digitalized Cupping Form!
                 </div>
                 
                 <!-- Coffee Cupping Form Container -->
@@ -1148,7 +1324,7 @@ $full_name = $user['full_name'] ?? '';
                                         <input type="text" id="tableNo1" name="table_no" required style="flex: 1;">
                                         <select id="batchSelect1" name="batch_number" style="width: 100px;">
                                             <?php for ($i = 1; $i <= 10; $i++): ?>
-                                            <option value="<?php echo $i; ?>">Batch <?php echo $i; ?></option>
+                                            <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
                                             <?php endfor; ?>
                                         </select>
                                     </div>
@@ -1208,7 +1384,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_green1" name="fragrance_attributes[]" value="green">
                                             <label for="fragrance_green1">GREEN</label>
                                         </div>
-                                        <div class="attribute-item orange">
+                                        <div class="attribute-item white">
                                             <input type="checkbox" id="fragrance_grain1" name="fragrance_attributes[]" value="grain">
                                             <label for="fragrance_grain1">GRAIN</label>
                                         </div>
@@ -1226,7 +1402,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_sweet1" name="fragrance_attributes[]" value="sweet">
                                             <label for="fragrance_sweet1">SWEET</label>
                                         </div>
-                                        <div class="attribute-item dark-red">
+                                        <div class="attribute-item brown">
                                             <input type="checkbox" id="fragrance_nutty1" name="fragrance_attributes[]" value="nutty">
                                             <label for="fragrance_nutty1">NUTTY/COCOA</label>
                                         </div>
@@ -1529,7 +1705,7 @@ $full_name = $user['full_name'] ?? '';
                                     <input type="text" id="tableNo2" name="table_no" required style="flex: 1;">
                                                                             <select id="batchSelect2" name="batch_number" style="width: 100px;">
                                             <?php for ($i = 1; $i <= 10; $i++): ?>
-                                            <option value="<?php echo $i; ?>">Batch <?php echo $i; ?></option>
+                                            <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
                                             <?php endfor; ?>
                                         </select>
                                 </div>
@@ -1588,7 +1764,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_green2" name="fragrance_attributes[]" value="green">
                                             <label for="fragrance_green2">GREEN</label>
                                         </div>
-                                        <div class="attribute-item orange">
+                                        <div class="attribute-item white">
                                             <input type="checkbox" id="fragrance_grain2" name="fragrance_attributes[]" value="grain">
                                             <label for="fragrance_grain2">GRAIN</label>
                                         </div>
@@ -1606,7 +1782,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_sweet2" name="fragrance_attributes[]" value="sweet">
                                             <label for="fragrance_sweet2">SWEET</label>
                                         </div>
-                                        <div class="attribute-item dark-red">
+                                        <div class="attribute-item brown">
                                             <input type="checkbox" id="fragrance_nutty2" name="fragrance_attributes[]" value="nutty">
                                             <label for="fragrance_nutty2">NUTTY/COCOA</label>
                                         </div>
@@ -1907,7 +2083,7 @@ $full_name = $user['full_name'] ?? '';
                                     <input type="text" id="tableNo3" name="table_no" required style="flex: 1;">
                                     <select id="batchSelect3" name="batch_number" style="width: 100px;">
                                         <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Batch <?php echo $i; ?></option>
+                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
@@ -1967,7 +2143,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_green3" name="fragrance_attributes[]" value="green">
                                             <label for="fragrance_green3">GREEN</label>
                                         </div>
-                                        <div class="attribute-item orange">
+                                        <div class="attribute-item white">
                                             <input type="checkbox" id="fragrance_grain3" name="fragrance_attributes[]" value="grain">
                                             <label for="fragrance_grain3">GRAIN</label>
                                         </div>
@@ -1985,7 +2161,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_sweet3" name="fragrance_attributes[]" value="sweet">
                                             <label for="fragrance_sweet3">SWEET</label>
                                         </div>
-                                        <div class="attribute-item dark-red">
+                                        <div class="attribute-item brown">
                                             <input type="checkbox" id="fragrance_nutty3" name="fragrance_attributes[]" value="nutty">
                                             <label for="fragrance_nutty3">NUTTY/COCOA</label>
                                         </div>
@@ -2286,7 +2462,7 @@ $full_name = $user['full_name'] ?? '';
                                     <input type="text" id="tableNo4" name="table_no" required style="flex: 1;">
                                     <select id="batchSelect4" name="batch_number" style="width: 100px;">
                                         <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Batch <?php echo $i; ?></option>
+                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
@@ -2346,7 +2522,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_green4" name="fragrance_attributes[]" value="green">
                                             <label for="fragrance_green4">GREEN</label>
                                         </div>
-                                        <div class="attribute-item orange">
+                                        <div class="attribute-item white">
                                             <input type="checkbox" id="fragrance_grain4" name="fragrance_attributes[]" value="grain">
                                             <label for="fragrance_grain4">GRAIN</label>
                                         </div>
@@ -2364,7 +2540,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_sweet4" name="fragrance_attributes[]" value="sweet">
                                             <label for="fragrance_sweet4">SWEET</label>
                                         </div>
-                                        <div class="attribute-item dark-red">
+                                        <div class="attribute-item brown">
                                             <input type="checkbox" id="fragrance_nutty4" name="fragrance_attributes[]" value="nutty">
                                             <label for="fragrance_nutty4">NUTTY/COCOA</label>
                                         </div>
@@ -2665,7 +2841,7 @@ $full_name = $user['full_name'] ?? '';
                                     <input type="text" id="tableNo5" name="table_no" required style="flex: 1;">
                                     <select id="batchSelect5" name="batch_number" style="width: 100px;">
                                         <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Batch <?php echo $i; ?></option>
+                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
@@ -2725,7 +2901,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_green5" name="fragrance_attributes[]" value="green">
                                             <label for="fragrance_green5">GREEN</label>
                                         </div>
-                                        <div class="attribute-item orange">
+                                        <div class="attribute-item white">
                                             <input type="checkbox" id="fragrance_grain5" name="fragrance_attributes[]" value="grain">
                                             <label for="fragrance_grain5">GRAIN</label>
                                         </div>
@@ -2743,7 +2919,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_sweet5" name="fragrance_attributes[]" value="sweet">
                                             <label for="fragrance_sweet5">SWEET</label>
                                         </div>
-                                        <div class="attribute-item dark-red">
+                                        <div class="attribute-item brown">
                                             <input type="checkbox" id="fragrance_nutty5" name="fragrance_attributes[]" value="nutty">
                                             <label for="fragrance_nutty5">NUTTY/COCOA</label>
                                         </div>
@@ -3046,7 +3222,7 @@ $full_name = $user['full_name'] ?? '';
                                     <input type="text" id="tableNo6" name="table_no" required style="flex: 1;">
                                     <select id="batchSelect6" name="batch_number" style="width: 100px;">
                                         <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Batch <?php echo $i; ?></option>
+                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
@@ -3106,7 +3282,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_green6" name="fragrance_attributes[]" value="green">
                                             <label for="fragrance_green6">GREEN</label>
                                         </div>
-                                        <div class="attribute-item orange">
+                                        <div class="attribute-item white">
                                             <input type="checkbox" id="fragrance_grain6" name="fragrance_attributes[]" value="grain">
                                             <label for="fragrance_grain6">GRAIN</label>
                                         </div>
@@ -3124,7 +3300,7 @@ $full_name = $user['full_name'] ?? '';
                                             <input type="checkbox" id="fragrance_sweet6" name="fragrance_attributes[]" value="sweet">
                                             <label for="fragrance_sweet6">SWEET</label>
                                         </div>
-                                        <div class="attribute-item dark-red">
+                                        <div class="attribute-item brown">
                                             <input type="checkbox" id="fragrance_nutty6" name="fragrance_attributes[]" value="nutty">
                                             <label for="fragrance_nutty6">NUTTY/COCOA</label>
                                         </div>
@@ -3995,7 +4171,7 @@ $full_name = $user['full_name'] ?? '';
             if (hasData) {
                 // Sample Information
                 review += `
-                    <div class="review-field-group">
+                    <div class="review-field-group sample-info">
                         <div class="review-field">
                             <div class="review-field-label">Sample ID</div>
                             <div class="review-field-value">${formData.sample_id || '<span class="empty">Not specified</span>'}</div>

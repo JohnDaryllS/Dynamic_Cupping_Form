@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_user'])) {
         exit();
     }
 
-    $stmt = $conn->prepare("INSERT INTO users (full_name, email, password, role) VALUES (?, ?, ?, 'user')");
+    $stmt = $conn->prepare("INSERT INTO users (full_name, email, password, role, is_approved) VALUES (?, ?, ?, 'user', 0)");
     $stmt->bind_param("sss", $full_name, $email, $password);
 
     if ($stmt->execute()) {
@@ -83,6 +83,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['change_password'])) {
         $_SESSION['success'] = "Password changed successfully!";
     } else {
         $_SESSION['error'] = "Failed to change password";
+    }
+    header("Location: dashboard.php");
+    exit();
+}
+
+// Handle User Approval/Rejection
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['approve_user'])) {
+    $user_id = $_POST['user_id'];
+    $action = $_POST['action']; // 'approve' or 'reject'
+    
+    if ($action == 'approve') {
+        $stmt = $conn->prepare("UPDATE users SET is_approved = 1 WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        
+        if ($stmt->execute()) {
+            $_SESSION['success'] = "User approved successfully!";
+        } else {
+            $_SESSION['error'] = "Failed to approve user";
+        }
+    } elseif ($action == 'reject') {
+        // Delete rejected user
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ? AND role != 'admin'");
+        $stmt->bind_param("i", $user_id);
+        
+        if ($stmt->execute()) {
+            $_SESSION['success'] = "User rejected and removed successfully!";
+        } else {
+            $_SESSION['error'] = "Failed to reject user";
+        }
     }
     header("Location: dashboard.php");
     exit();
@@ -220,18 +249,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
                                     <th>Full Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                $result = $conn->query("SELECT id, full_name, email, role FROM users ORDER BY id DESC");
+                                $result = $conn->query("SELECT id, full_name, email, role, is_approved FROM users ORDER BY id DESC");
                                 while ($row = $result->fetch_assoc()): ?>
                                 <tr>
                                     <td><?php echo $row['id']; ?></td>
                                     <td><?php echo htmlspecialchars($row['full_name']); ?></td>
                                     <td><?php echo htmlspecialchars($row['email']); ?></td>
                                     <td><span class="badge bg-<?php echo $row['role'] == 'admin' ? 'primary' : 'secondary'; ?>"><?php echo ucfirst($row['role']); ?></span></td>
+                                    <td>
+                                        <?php if ($row['role'] == 'admin'): ?>
+                                            <span class="badge bg-success">Approved</span>
+                                        <?php elseif ($row['is_approved'] == 1): ?>
+                                            <span class="badge bg-success">Approved</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning">Pending</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="action-buttons">
                                             <!-- Edit Email Button -->
                                             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" 
@@ -247,6 +286,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
                                                     data-userid="<?php echo $row['id']; ?>">
                                                 <i class="fas fa-key"></i> Change Password
                                             </button>
+                                            
+                                            <?php if ($row['role'] != 'admin' && $row['is_approved'] == 0): ?>
+                                                <!-- Approve Button -->
+                                                <button class="btn btn-sm btn-success" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#approveUserModal"
+                                                        data-userid="<?php echo $row['id']; ?>"
+                                                        data-username="<?php echo htmlspecialchars($row['full_name']); ?>">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </button>
+                                                
+                                                <!-- Reject Button -->
+                                                <button class="btn btn-sm btn-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#rejectUserModal"
+                                                        data-userid="<?php echo $row['id']; ?>"
+                                                        data-username="<?php echo htmlspecialchars($row['full_name']); ?>">
+                                                    <i class="fas fa-times"></i> Reject
+                                                </button>
+                                            <?php endif; ?>
                                             
                                             <!-- Delete Button -->
                                             <button class="btn btn-sm btn-outline-danger" 
@@ -330,6 +389,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
                         <button type="submit" class="btn btn-primary">Change Password</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve User Modal -->
+    <div class="modal fade" id="approveUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Approve User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to approve <strong id="approve_username"></strong>?</p>
+                    <p class="text-muted">This user will be able to log in and access the system.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST">
+                        <input type="hidden" name="user_id" id="approve_user_id">
+                        <input type="hidden" name="approve_user" value="1">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Approve User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject User Modal -->
+    <div class="modal fade" id="rejectUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to reject <strong id="reject_username"></strong>?</p>
+                    <p class="text-muted">This user account will be permanently deleted.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST">
+                        <input type="hidden" name="user_id" id="reject_user_id">
+                        <input type="hidden" name="approve_user" value="1">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Reject User</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -422,6 +531,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
             modal.querySelector('#password_user_id').value = userId;
             modal.querySelector('#new_password').value = '';
             modal.querySelector('#confirm_password').value = '';
+        });
+
+        // Initialize approve user modal
+        document.getElementById('approveUserModal').addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-userid');
+            var username = button.getAttribute('data-username');
+            
+            var modal = this;
+            modal.querySelector('#approve_user_id').value = userId;
+            modal.querySelector('#approve_username').textContent = username;
+        });
+
+        // Initialize reject user modal
+        document.getElementById('rejectUserModal').addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-userid');
+            var username = button.getAttribute('data-username');
+            
+            var modal = this;
+            modal.querySelector('#reject_user_id').value = userId;
+            modal.querySelector('#reject_username').textContent = username;
         });
 
         // Initialize delete confirmation modal

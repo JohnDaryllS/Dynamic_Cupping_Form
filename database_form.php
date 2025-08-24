@@ -23,7 +23,6 @@ $offset = ($page - 1) * $per_page;
             DATE_FORMAT(cf.form_date, '%b %d, %Y') as formatted_date,
             cf.form_number,
             cf.table_no,
-            cf.batch_number,
             cf.sample_id,
             cf.fragrance_intensity,
             cf.flavor_intensity,
@@ -39,8 +38,7 @@ if (!empty($search)) {
     $query .= " WHERE 
                 cf.user_name LIKE ? OR 
                 u.full_name LIKE ? OR 
-                cf.table_no LIKE ? OR
-                cf.batch_number LIKE ?";
+                cf.table_no LIKE ?";
     $search_param = "%$search%";
 }
 
@@ -54,7 +52,7 @@ if (!$stmt) {
 }
 
 if (!empty($search)) {
-    $stmt->bind_param("ssssii", $search_param, $search_param, $search_param, $search_param, $per_page, $offset);
+    $stmt->bind_param("sssii", $search_param, $search_param, $search_param, $per_page, $offset);
 } else {
     $stmt->bind_param("ii", $per_page, $offset);
 }
@@ -70,7 +68,7 @@ $total_count = 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coffee Cupping Database | Specialty Coffee Depot</title>
-    <link rel="shortcut icon" href="img/1.png" type="image/x-icon">
+    <link rel="shortcut icon" href="img/fci.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -109,8 +107,11 @@ $total_count = 0;
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="sidebar-header">
-                <img src="img/1.png" alt="Logo" class="sidebar-logo">
-                <h3>SCA Cupping Form</h3>
+                <div class="logo-container">
+                    <img src="img/TRANSPARENT BG.png" alt="Logo" class="sidebar-logo">
+                    <img src="img/fci.png" alt="Second Logo" class="sidebar-logo second-logo">
+                </div>
+                <h3>Filipino Coffee Institute</h3>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="dashboard.php"><i class="fas fa-users"></i> User Management</a></li>
@@ -147,7 +148,7 @@ $total_count = 0;
                         <form method="GET" class="row g-3">
                             <div class="col-md-6">
                                 <input type="text" name="search" class="form-control" 
-                                       placeholder="Search by name, table, or batch..." 
+                                       placeholder="Search by name or table..." 
                                        value="<?= htmlspecialchars($search) ?>">
                             </div>
                             <div class="col-md-2">
@@ -182,7 +183,6 @@ $total_count = 0;
                                         <th>Date</th>
                                         <th>Form #</th>
                                         <th>Table</th>
-                                        <th>Sample No.</th>
                                         <th>Sample ID</th>
                                         <th>Actions</th>
                                     </tr>
@@ -196,7 +196,6 @@ $total_count = 0;
                                         <td><?= $row['formatted_date'] ?></td>
                                         <td><?= $row['form_number'] ?></td>
                                         <td><?= htmlspecialchars($row['table_no']) ?></td>
-                                        <td><?= $row['batch_number'] ?></td>
                                         <td><?= htmlspecialchars($row['sample_id'] ?? 'N/A') ?></td>
                                         <td class="action-buttons">
                                             <button class="btn btn-sm btn-primary view-details" 

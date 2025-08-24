@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 16, 2025 at 04:57 PM
+-- Generation Time: May 07, 2025 at 08:11 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,90 +33,50 @@ CREATE TABLE `cupping_forms` (
   `user_name` varchar(100) NOT NULL,
   `submission_date` datetime NOT NULL,
   `form_date` date NOT NULL,
-  `form_number` int(11) NOT NULL DEFAULT 1,
   `table_no` varchar(50) NOT NULL,
   `batch_number` int(11) NOT NULL,
-  `sample_id` varchar(100) DEFAULT NULL,
-  `fragrance_intensity` int(11) NOT NULL DEFAULT 3,
-  `fragrance_attributes` text DEFAULT NULL,
-  `fragrance_others_text` text DEFAULT NULL,
-  `flavor_intensity` int(11) NOT NULL DEFAULT 3,
-  `flavor_attributes` text DEFAULT NULL,
-  `flavor_others_text` text DEFAULT NULL,
-  `body_intensity` int(11) NOT NULL DEFAULT 3,
-  `body_type` text DEFAULT NULL,
-  `body_others_text` text DEFAULT NULL,
-  `acidity_intensity` int(11) NOT NULL DEFAULT 3,
-  `acidity_type` text DEFAULT NULL,
-  `acidity_others_text` text DEFAULT NULL,
-  `sweetness_intensity` int(11) NOT NULL DEFAULT 3,
-  `sweetness_type` text DEFAULT NULL,
-  `sweetness_others_text` text DEFAULT NULL,
-  `general_notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `fragrance_aroma` decimal(4,2) NOT NULL,
+  `dry` int(11) NOT NULL,
+  `break_value` int(11) NOT NULL,
+  `quality1` varchar(100) DEFAULT NULL,
+  `quality2` varchar(100) DEFAULT NULL,
+  `fragrance_notes` text DEFAULT NULL,
+  `flavor` decimal(4,2) NOT NULL,
+  `flavor_notes` text DEFAULT NULL,
+  `aftertaste` decimal(4,2) NOT NULL,
+  `aftertaste_notes` text DEFAULT NULL,
+  `acidity` decimal(4,2) NOT NULL,
+  `acidity_intensity` int(11) NOT NULL,
+  `acidity_notes` text DEFAULT NULL,
+  `body` decimal(4,2) NOT NULL,
+  `body_level` int(11) NOT NULL,
+  `body_notes` text DEFAULT NULL,
+  `uniformity` int(11) NOT NULL,
+  `uniformity_notes` text DEFAULT NULL,
+  `clean_cup` int(11) NOT NULL,
+  `clean_cup_notes` text DEFAULT NULL,
+  `overall` decimal(4,2) NOT NULL,
+  `overall_notes` text DEFAULT NULL,
+  `balance` decimal(4,2) NOT NULL,
+  `balance_notes` text DEFAULT NULL,
+  `sweetness` int(11) NOT NULL,
+  `sweetness_notes` text DEFAULT NULL,
+  `defective_cups` int(11) DEFAULT NULL,
+  `defect_intensity` int(11) DEFAULT NULL,
+  `defect_points` int(11) DEFAULT NULL,
+  `total_score` decimal(5,2) NOT NULL,
+  `final_score` decimal(5,2) NOT NULL,
+  `comments` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `cupping_forms`
 --
 
-INSERT INTO `cupping_forms` (`id`, `user_id`, `user_name`, `submission_date`, `form_date`, `form_number`, `table_no`, `batch_number`, `sample_id`, `fragrance_intensity`, `fragrance_attributes`, `fragrance_others_text`, `flavor_intensity`, `flavor_attributes`, `flavor_others_text`, `body_intensity`, `body_type`, `body_others_text`, `acidity_intensity`, `acidity_type`, `acidity_others_text`, `sweetness_intensity`, `sweetness_type`, `sweetness_others_text`, `general_notes`, `created_at`) VALUES
-(1, 3, 'johndaryllramos8@gmail.com', '2025-08-14 12:38:21', '2025-08-14', 1, '3', 1, 'RA242', 2, '[\"green\",\"grain\",\"fruity\",\"nutty\",\"roasted\",\"others\"]', 'DSADSADSADSADAS', 2, '[\"spices\",\"brown_spices\",\"nutty\",\"sweet\",\"caramel\",\"floral\",\"berry\",\"pomme\",\"winey\",\"others\"]', 'DSADSADASDAS', 4, '[\"smooth\",\"others\"]', 'DSADASDASDSAASD', 3, '[\"ripe_fruit\",\"winey\",\"others\"]', 'DSADSADASDSA', 3, '[\"ripe_fruit\",\"others\"]', 'DSADSADSADSA', 'DSADSADASDSADSADSADSADASDSA', '2025-08-14 04:38:21'),
-(2, 3, 'johndaryllramos8@gmail.com', '2025-08-14 23:21:38', '2025-08-14', 1, '3', 1, 'RA242', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-14 15:21:38'),
-(3, 3, 'johndaryllramos8@gmail.com', '2025-08-14 23:21:38', '2025-08-14', 2, '3', 1, 'RA213', 4, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-14 15:21:38'),
-(4, 3, 'johndaryllramos8@gmail.com', '2025-08-14 23:21:38', '2025-08-14', 3, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-14 15:21:38'),
-(5, 3, 'johndaryllramos8@gmail.com', '2025-08-14 23:21:38', '2025-08-14', 4, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-14 15:21:38'),
-(6, 3, 'johndaryllramos8@gmail.com', '2025-08-14 23:21:38', '2025-08-14', 5, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-14 15:21:38'),
-(7, 3, 'johndaryllramos8@gmail.com', '2025-08-14 23:21:38', '2025-08-14', 6, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-14 15:21:38'),
-(8, 3, 'johndaryllramos8@gmail.com', '2025-08-16 14:35:35', '2025-08-14', 1, '3', 1, 'RA242', 2, NULL, 'dsadsadasdsa', 3, NULL, '', 2, NULL, '', 3, NULL, 'hello testing', 3, NULL, '', 'ewqewqeqweqw', '2025-08-16 06:35:35'),
-(9, 3, 'johndaryllramos8@gmail.com', '2025-08-16 14:35:35', '2025-08-14', 2, '3', 1, '', 5, NULL, 'eweqewq', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 06:35:35'),
-(10, 3, 'johndaryllramos8@gmail.com', '2025-08-16 14:35:35', '2025-08-14', 3, '3', 1, 'RA242', 4, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 06:35:35'),
-(11, 3, 'johndaryllramos8@gmail.com', '2025-08-16 14:35:35', '2025-08-14', 4, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 5, NULL, '', 4, NULL, '', '', '2025-08-16 06:35:35'),
-(12, 3, 'johndaryllramos8@gmail.com', '2025-08-16 14:35:35', '2025-08-14', 5, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 06:35:35'),
-(13, 3, 'johndaryllramos8@gmail.com', '2025-08-16 14:35:35', '2025-08-14', 6, '3', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, 'testing', 3, NULL, 'ewqeqww', '', '2025-08-16 06:35:35'),
-(14, 3, 'johndaryllramos8@gmail.com', '2025-08-16 15:25:04', '2025-08-16', 1, '31', 1, '31', 2, '[\"green\"]', '', 1, NULL, '', 2, NULL, '', 1, NULL, '', 4, NULL, '', '', '2025-08-16 07:25:04'),
-(15, 3, 'johndaryllramos8@gmail.com', '2025-08-16 15:25:04', '2025-08-16', 2, '2', 1, '123', 3, NULL, '', 3, NULL, '', 3, NULL, '', 4, NULL, '', 2, NULL, '', 'ewqewqeqweqw', '2025-08-16 07:25:04'),
-(16, 3, 'johndaryllramos8@gmail.com', '2025-08-16 15:25:04', '2025-08-16', 3, '36', 1, '53', 1, NULL, 'ewqewqeqw', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', '', '2025-08-16 07:25:04'),
-(17, 3, 'johndaryllramos8@gmail.com', '2025-08-16 15:25:04', '2025-08-16', 4, '3', 1, '11', 2, NULL, '', 4, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 07:25:04'),
-(18, 3, 'johndaryllramos8@gmail.com', '2025-08-16 15:25:04', '2025-08-16', 5, '8', 1, '232', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', '', '2025-08-16 07:25:04'),
-(19, 3, 'johndaryllramos8@gmail.com', '2025-08-16 15:25:04', '2025-08-16', 6, '1', 2, '422', 3, NULL, '', 1, NULL, '', 3, NULL, '', 3, NULL, '', 4, '[\"ripe_fruit\"]', '', '', '2025-08-16 07:25:04'),
-(20, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:09:45', '2025-08-16', 1, '', 1, '', 5, NULL, '', 5, NULL, '', 5, NULL, '', 5, NULL, '', 5, NULL, '', '', '2025-08-16 09:09:45'),
-(21, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:09:45', '0000-00-00', 2, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:09:45'),
-(22, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:09:45', '0000-00-00', 3, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:09:45'),
-(23, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:09:45', '0000-00-00', 4, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:09:45'),
-(24, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:09:45', '0000-00-00', 5, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:09:45'),
-(25, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:09:45', '2025-08-16', 6, '3', 1, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', '', '2025-08-16 09:09:45'),
-(26, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:10:07', '0000-00-00', 1, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:10:07'),
-(27, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:10:07', '0000-00-00', 2, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:10:07'),
-(28, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:10:07', '0000-00-00', 3, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:10:07'),
-(30, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:10:07', '0000-00-00', 5, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 09:10:07'),
-(31, 3, 'johndaryllramos8@gmail.com', '2025-08-16 17:10:07', '2025-08-16', 6, '3', 1, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', 1, NULL, '', '', '2025-08-16 09:10:07'),
-(34, 3, 'johndaryllramos8@gmail.com', '2025-08-16 21:44:53', '2025-08-16', 3, '', 1, '', 1, NULL, '', 1, NULL, '', 2, NULL, '', 3, NULL, '', 2, NULL, '', '', '2025-08-16 13:44:53'),
-(42, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:02:16', '0000-00-00', 5, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:02:16'),
-(44, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:28:39', '2025-08-16', 1, '3', 1, '422', 2, NULL, 'ewqeqweqweqw testing', 3, NULL, ' testing testing', 3, NULL, '', 3, NULL, '', 3, NULL, ' testing', '', '2025-08-16 14:28:39'),
-(45, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:28:39', '2025-08-16', 2, '2', 1, 'RA242', 3, NULL, 'testing', 2, NULL, '', 2, NULL, 'testingtestingtesting', 1, NULL, 'testingtesting', 2, NULL, 'testingtesting', 'ewqewqdsadq', '2025-08-16 14:28:39'),
-(46, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:28:39', '2025-08-16', 3, '5', 1, 'RA242', 3, NULL, 'ewqeqw', 3, NULL, 'testing', 3, NULL, 'testing', 3, NULL, 'ewqevtesting', 3, NULL, 'testing', 'testingtestingtestingtesting', '2025-08-16 14:28:39'),
-(47, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:28:39', '2025-08-16', 4, '8', 1, '422s', 3, NULL, 'testing', 3, NULL, '', 3, NULL, 'testingtesting', 3, NULL, 'testingtestingtesting', 3, NULL, 'testing', 'testingtestingtestingtesting', '2025-08-16 14:28:39'),
-(48, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:28:39', '2025-08-16', 5, '2', 1, 'RA242', 3, NULL, 'dsadasdtestingtestingtesting', 3, NULL, 'testingtesting', 2, NULL, 'testingtesting', 3, NULL, 'testingtesting', 3, NULL, 'ewqesdsad testingtestingtesting', 'ewqewqeqtestingtestingtesting', '2025-08-16 14:28:39'),
-(49, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:28:39', '2025-08-16', 6, '3', 1, '', 2, NULL, '', 2, NULL, 'testing', 2, NULL, 'testingtesting', 3, NULL, 'testingtesting', 3, NULL, 'testingtestingtestingtestingtesting', 'testingtestingtestingtesting', '2025-08-16 14:28:39'),
-(50, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:42:48', '2025-08-16', 1, '2', 1, 'RA242', 2, '[\"fruity\"]', '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:42:48'),
-(51, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:42:48', '0000-00-00', 2, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:42:48'),
-(52, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:42:48', '0000-00-00', 3, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:42:48'),
-(53, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:42:48', '0000-00-00', 4, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:42:48'),
-(54, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:42:48', '0000-00-00', 5, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:42:48'),
-(55, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:42:48', '2025-08-16', 6, '3', 1, '', 2, '[\"nutty\"]', '', 4, NULL, '', 2, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:42:48'),
-(56, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:45:10', '2025-08-16', 1, '2357', 1, '', 2, '[\"others\"]', 'EWQEWQ', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 'EWQEWQ', '2025-08-16 14:45:10'),
-(57, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:45:10', '0000-00-00', 2, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:45:10'),
-(58, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:45:10', '0000-00-00', 3, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:45:10'),
-(59, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:45:10', '0000-00-00', 4, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:45:10'),
-(60, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:45:10', '0000-00-00', 5, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:45:10'),
-(61, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:45:10', '2025-08-16', 6, '32', 1, '', 2, '[\"spices\"]', '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 'EWQEQW', '2025-08-16 14:45:10'),
-(62, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:54:57', '2025-08-16', 1, '232', 1, 'RA242', 3, '[\"fruity\"]', '', 3, '[\"others\"]', 'DSDAS', 3, '[\"smooth\"]', '', 3, '[\"others\"]', 'DSADAS', 3, '[\"others\"]', 'DSADAS', 'DSADASDSA', '2025-08-16 14:54:57'),
-(63, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:54:57', '0000-00-00', 2, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:54:57'),
-(64, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:54:57', '0000-00-00', 3, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:54:57'),
-(65, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:54:57', '0000-00-00', 4, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:54:57'),
-(66, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:54:57', '0000-00-00', 5, '', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:54:57'),
-(67, 3, 'johndaryllramos8@gmail.com', '2025-08-16 22:54:57', '2025-08-16', 6, '22', 1, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', 3, NULL, '', '', '2025-08-16 14:54:57');
+INSERT INTO `cupping_forms` (`id`, `user_id`, `user_name`, `submission_date`, `form_date`, `table_no`, `batch_number`, `fragrance_aroma`, `dry`, `break_value`, `quality1`, `quality2`, `fragrance_notes`, `flavor`, `flavor_notes`, `aftertaste`, `aftertaste_notes`, `acidity`, `acidity_intensity`, `acidity_notes`, `body`, `body_level`, `body_notes`, `uniformity`, `uniformity_notes`, `clean_cup`, `clean_cup_notes`, `overall`, `overall_notes`, `balance`, `balance_notes`, `sweetness`, `sweetness_notes`, `defective_cups`, `defect_intensity`, `defect_points`, `total_score`, `final_score`, `comments`) VALUES
+(7, 3, 'johndaryllramos8@gmail.com', '2025-04-14 17:16:35', '2025-04-14', '34A', 1, 9.50, 5, 1, 'sweet', 'badass', 'eqwe', 9.75, 'dsadsa', 10.00, 'dsadas', 9.75, 4, 'dsadasd', 9.75, 3, 'dsdas', 9, 'dsdasd', 10, 'dsadsa', 9.50, 'dsadasdasdadas', 9.75, 'dsada', 10, 'wewqeqw', 4, 3, 12, 97.00, 85.00, 'testing testing'),
+(8, 5, 'felsonecaragao@gmail.com', '2025-04-14 18:06:07', '2025-04-14', '22', 6, 9.75, 5, 5, 'q1', 'q2', 'fa', 9.50, 'fs', 9.75, 'at', 9.75, 1, 'ac', 10.00, 5, 'bd', 9, 'umt', 10, '', 9.75, 'on', 9.75, 'balance', 10, '', 2, 2, 4, 97.25, 93.25, 'notes/comments'),
+(9, 6, 'johndaryllramos23@gmail.com', '2025-04-16 21:26:51', '2025-04-16', '32C', 5, 9.75, 5, 5, 'X1', 'X12', 'SD', 9.50, 'SDAS', 10.00, 'DSAD', 6.00, 2, 'DSA', 9.75, 4, 'DSADAS', 9, 'DSADAS', 9, 'dsdsadas', 9.50, 'dsadas', 8.50, 'dsdasdasdsadsa', 9, 'dsadsaas', 2, 2, 4, 90.00, 86.00, 'fdsfdsfdsf testing');
 
 -- --------------------------------------------------------
 
@@ -151,21 +111,19 @@ CREATE TABLE `users` (
   `full_name` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','user') DEFAULT 'user',
-  `is_approved` tinyint(1) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `role` enum('admin','user') DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `role`, `is_approved`) VALUES
-(1, '', 'admin@specialtycoffeedepotph.com', 'c0b9f07001f97804f5bce76941e9f403c6db8485ee9121c352400ede71843345', 'admin', 1),
-(3, 'John Daryll Sampilingan', 'johndaryllramos8@gmail.com', '932f3c1b56257ce8539ac269d7aab42550dacf8818d075f0bdf1990562aae3ef', 'user', 1),
-(4, 'Johnny gayo', 'johnny.gayo@specialtycoffeedepotph.com', '932f3c1b56257ce8539ac269d7aab42550dacf8818d075f0bdf1990562aae3ef', 'user', 1),
-(5, 'Felsone Caragao', 'felsonecaragao@gmail.com', '5751a44782594819e4cb8aa27c2c9d87a420af82bc6a5a05bc7f19c3bb00452b', 'user', 1),
-(6, 'Princess Ann Sampilingan', 'johndaryllramos23@gmail.com', '1718c24b10aeb8099e3fc44960ab6949ab76a267352459f203ea1036bec382c2', 'user', 1);
+INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `role`) VALUES
+(1, '', 'admin@specialtycoffeedepotph.com', 'c0b9f07001f97804f5bce76941e9f403c6db8485ee9121c352400ede71843345', 'admin'),
+(3, 'John Daryll Sampilingan', 'johndaryllramos8@gmail.com', '932f3c1b56257ce8539ac269d7aab42550dacf8818d075f0bdf1990562aae3ef', 'user'),
+(4, 'Johnny gayo', 'johnny.gayo@specialtycoffeedepotph.com', '932f3c1b56257ce8539ac269d7aab42550dacf8818d075f0bdf1990562aae3ef', 'user'),
+(5, 'Felsone Caragao', 'felsonecaragao@gmail.com', '5751a44782594819e4cb8aa27c2c9d87a420af82bc6a5a05bc7f19c3bb00452b', 'user'),
+(6, 'Princess Ann Sampilingan', 'johndaryllramos23@gmail.com', '1718c24b10aeb8099e3fc44960ab6949ab76a267352459f203ea1036bec382c2', 'user');
 
 --
 -- Indexes for dumped tables
@@ -175,7 +133,8 @@ INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `role`, `is_approve
 -- Indexes for table `cupping_forms`
 --
 ALTER TABLE `cupping_forms`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `remember_tokens`
@@ -199,7 +158,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cupping_forms`
 --
 ALTER TABLE `cupping_forms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `remember_tokens`
@@ -216,6 +175,12 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `cupping_forms`
+--
+ALTER TABLE `cupping_forms`
+  ADD CONSTRAINT `cupping_forms_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `remember_tokens`

@@ -72,7 +72,6 @@ try {
                     </div>
                     <div class="card-body">
                         <p><strong>Table:</strong> <?= htmlspecialchars($form['table_no']) ?></p>
-                        <p><strong>Batch:</strong> <?= $form['batch_number'] ?></p>
                         <p><strong>Sample ID:</strong> <?= htmlspecialchars($form['sample_id'] ?? 'N/A') ?></p>
                     </div>
                 </div>

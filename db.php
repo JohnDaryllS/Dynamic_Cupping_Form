@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root"; // Change if necessary
 $pass = ""; // Change if necessary
-$dbname = "specialty_coffee_depot";
+$dbname = "geo_location";
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 $conn->query("SET time_zone = '+08:00'");

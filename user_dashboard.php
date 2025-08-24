@@ -117,7 +117,7 @@ $full_name = $user['full_name'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard | SCA Cupping Form</title>
-    <link rel="shortcut icon" href="img/image-removebg-preview.png" type="image/x-icon">
+    <link rel="shortcut icon" href="img/fci.png" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
@@ -502,11 +502,230 @@ $full_name = $user['full_name'] ?? '';
             cursor: pointer;
             transition: all 0.2s;
             min-width: 120px;
+            position: relative;
+            user-select: none;
+            outline: none;
+        }
+
+        .attribute-item:focus {
+            outline: 2px solid #2c5530;
+            outline-offset: 2px;
         }
         
         .attribute-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: #2c5530 !important;
+        }
+
+        .attribute-item:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Click feedback */
+        .attribute-item.clicking {
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
+        }
+
+        /* Validation Error Styling */
+        .alert-danger {
+            border-left: 4px solid #dc3545;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+            border-color: #dc3545;
+            color: #721c24;
+            font-weight: 500;
+        }
+
+        .alert-danger .btn-close {
+            color: #dc3545;
+        }
+
+        .alert-danger .error-message {
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        /* Validation Warning Banner Styling */
+        .validation-warning-banner {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        .validation-warning-banner .warning-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .validation-warning-banner .warning-text {
+            color: #856404;
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .validation-warning-banner .btn-outline-warning {
+            border-color: #ffc107;
+            color: #856404;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .validation-warning-banner .btn-outline-warning:hover {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Validation Status Modal Styling */
+        .validation-status-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .validation-status-modal .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        .validation-status-modal .modal-header {
+            background: linear-gradient(135deg, #2c5530, #4a7c59);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .validation-status-modal .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .validation-status-modal .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .validation-status-modal .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .validation-status-modal .modal-body {
+            padding: 20px;
+        }
+
+        .validation-status-summary h4 {
+            color: #2c5530;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .validation-status-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .validation-status-item.status-complete {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+
+        .validation-status-item.status-incomplete {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+
+        .validation-status-item .status-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .validation-status-item .missing-items {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Form validation visual indicators */
+        .form-section:has(input[type="checkbox"]:not(:checked)) .form-section-header {
+            position: relative;
+        }
+
+        .form-section:has(input[type="checkbox"]:not(:checked)) .form-section-header::after {
+            content: '⚠️ Required';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #dc3545;
+            background: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #dc3545;
         }
         
         .attribute-item input[type="checkbox"] {
@@ -602,6 +821,40 @@ $full_name = $user['full_name'] ?? '';
         
         .attribute-item input[type="checkbox"]:checked {
             accent-color: #2c5530;
+        }
+
+        /* Visual indicator for clickable area */
+        .attribute-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 6px;
+            background: transparent;
+            transition: background-color 0.2s;
+            pointer-events: none;
+        }
+
+        .attribute-item:hover::before {
+            background: rgba(44, 85, 48, 0.1);
+        }
+
+        /* Additional visual cues for clickability */
+        .attribute-item::after {
+            content: '👆';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .attribute-item:hover::after {
+            opacity: 0.7;
         }
         
         .form-section textarea {
@@ -722,9 +975,9 @@ $full_name = $user['full_name'] ?? '';
         /* Form Navigation Styles */
         .form-navigation {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 30px;
             padding: 20px;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -732,10 +985,17 @@ $full_name = $user['full_name'] ?? '';
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .nav-arrow {
-            background: #2c5530;
-            color: white;
-            border: none;
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            background: #e9ecef;
+            color: #6c757d;
+            border: 2px solid #dee2e6;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -745,19 +1005,118 @@ $full_name = $user['full_name'] ?? '';
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 18px;
-            box-shadow: 0 2px 8px rgba(44, 85, 48, 0.3);
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .nav-arrow:hover:not(:disabled) {
-            background: #1e3a23;
+        .nav-btn:hover {
+            background: #2c5530;
+            color: white;
+            border-color: #2c5530;
             transform: scale(1.1);
             box-shadow: 0 4px 12px rgba(44, 85, 48, 0.4);
         }
 
-        .nav-arrow:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-            opacity: 0.6;
+        .nav-btn:hover::before {
+            content: 'Form ' attr(data-form);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c5530;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            animation: tooltipFadeIn 0.3s ease-in-out forwards;
+        }
+
+        @keyframes tooltipFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .nav-btn.active {
+            background: #2c5530;
+            color: white;
+            border-color: #2c5530;
+            box-shadow: 0 4px 12px rgba(44, 85, 48, 0.4);
+            position: relative;
+        }
+
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border-radius: 50%;
+            z-index: -1;
+            animation: activeGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes activeGlow {
+            from {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .nav-buttons {
+                gap: 8px;
+            }
+            
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+            
+            .form-navigation {
+                padding: 15px;
+                gap: 12px;
+            }
+
+            /* Make attribute items more touch-friendly on mobile */
+            .attribute-item {
+                padding: 12px 16px;
+                min-width: 140px;
+                min-height: 44px; /* Minimum touch target size */
+            }
+
+            .attribute-item input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-buttons {
+                gap: 6px;
+            }
+            
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .form-navigation.bottom-navigation {
+                margin-top: 20px;
+                padding: 15px;
+            }
         }
 
         .form-counter {
@@ -768,6 +1127,50 @@ $full_name = $user['full_name'] ?? '';
             padding: 10px 20px;
             border-radius: 25px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Bottom Navigation Styles */
+        .form-navigation.bottom-navigation {
+            margin-top: 30px;
+            margin-bottom: 0;
+            border-top: 3px solid #2c5530;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            position: relative;
+        }
+
+        .form-navigation.bottom-navigation::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: #2c5530;
+            border-radius: 2px;
+        }
+
+        .form-navigation.bottom-navigation .nav-btn {
+            background: #f8f9fa;
+            border-color: #2c5530;
+            color: #2c5530;
+        }
+
+        .form-navigation.bottom-navigation .nav-btn:hover {
+            background: #2c5530;
+            color: white;
+        }
+
+        .form-navigation.bottom-navigation .nav-btn.active {
+            background: #2c5530;
+            color: white;
+        }
+
+        .navigation-separator {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #2c5530, transparent);
+            margin: 20px 0;
+            border-radius: 1px;
         }
 
         /* Form Pages */
@@ -789,6 +1192,22 @@ $full_name = $user['full_name'] ?? '';
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes buttonPulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .nav-btn:active {
+            animation: buttonPulse 0.2s ease-in-out;
         }
 
         /* Progress Indicator */
@@ -1201,8 +1620,11 @@ $full_name = $user['full_name'] ?? '';
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="sidebar-header">
-                <img src="img/1.png" alt="Logo" class="sidebar-logo">
-                <h3>Digitalized Cupping Form</h3>
+                <div class="logo-container">
+                    <img src="img/TRANSPARENT BG.png" alt="Logo" class="sidebar-logo">
+                    <img src="img/fci.png" alt="Second Logo" class="sidebar-logo second-logo">
+                </div>
+                <h3>Filipino Coffee Institute</h3>
             </div>
             <ul class="sidebar-menu">
                 <li class="active"><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -1237,20 +1659,22 @@ $full_name = $user['full_name'] ?? '';
                 </div>
             <?php endif; ?>
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i> Welcome to your Digitalized Cupping Form!
+                    <i class="fas fa-info-circle me-2"></i> Welcome to Filipino Coffee Institute Cupping Form!
                 </div>
                 
                 <!-- Coffee Cupping Form Container -->
                 <div class="form-container">
-                    <!-- Navigation Arrows -->
+                    <!-- Navigation Buttons -->
                     <div class="form-navigation">
-                        <button type="button" id="prevForm" class="nav-arrow prev-arrow" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span class="form-counter">Form <span id="currentFormNum">1</span> of 6</span>
-                        <button type="button" id="nextForm" class="nav-arrow next-arrow">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                        <div class="nav-buttons">
+                            <button type="button" class="nav-btn active" data-form="1" aria-label="Go to Form 1" title="Form 1">1</button>
+                            <button type="button" class="nav-btn" data-form="2" aria-label="Go to Form 2" title="Form 2">2</button>
+                            <button type="button" class="nav-btn" data-form="3" aria-label="Go to Form 3" title="Form 3">3</button>
+                            <button type="button" class="nav-btn" data-form="4" aria-label="Go to Form 4" title="Form 4">4</button>
+                            <button type="button" class="nav-btn" data-form="5" aria-label="Go to Form 5" title="Form 5">5</button>
+                            <button type="button" class="nav-btn" data-form="6" aria-label="Go to Form 6" title="Form 6">6</button>
+                        </div>
+                        <div class="form-counter">Form <span id="currentFormNum">1</span> of 6</div>
                     </div>
                     
                     <!-- Progress Indicator -->
@@ -1292,9 +1716,6 @@ $full_name = $user['full_name'] ?? '';
                                 <!-- Review content will be populated here -->
                             </div>
                             <div class="review-modal-footer">
-                                <button type="button" class="btn btn-secondary" id="editFormsBtn">
-                                    <i class="fas fa-edit me-2"></i>Edit Forms
-                                </button>
                                 <button type="button" class="btn btn-success" id="confirmSubmitBtn">
                                     <i class="fas fa-check me-2"></i>Confirm & Submit All Forms
                                 </button>
@@ -1304,6 +1725,14 @@ $full_name = $user['full_name'] ?? '';
 
                     <!-- Form 1 -->
                     <div class="form-page active" id="form1">
+                        <!-- Validation Warning Banner -->
+                        <div id="validationWarning1" class="validation-warning-banner" style="display: none;">
+                            <div class="warning-content">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span class="warning-text">This form requires completion of all sections before submission.</span>
+                            </div>
+                        </div>
+                        
                         <form id="cuppingForm1" method="POST" action="process_cupping.php" enctype="multipart/form-data">
                             <input type="hidden" name="_subject" value="New Coffee Cupping Form Submission">
                             
@@ -1320,14 +1749,7 @@ $full_name = $user['full_name'] ?? '';
                                 </div>
                                 <div>
                                     <label for="tableNo1">Table no:</label>
-                                    <div style="display: flex; gap: 10px;">
-                                        <input type="text" id="tableNo1" name="table_no" required style="flex: 1;">
-                                        <select id="batchSelect1" name="batch_number" style="width: 100px;">
-                                            <?php for ($i = 1; $i <= 10; $i++): ?>
-                                            <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
-                                            <?php endfor; ?>
-                                        </select>
-                                    </div>
+                                    <input type="text" id="tableNo1" name="table_no" required>
                                 </div>
                             </div>
                         
@@ -1598,10 +2020,12 @@ $full_name = $user['full_name'] ?? '';
                                 <div class="intensity-scale">
                                     <div class="scale-labels">
                                         <span>1</span>
+                                        <span>2</span>
                                         <span>3</span>
+                                        <span>4</span>
                                         <span>5</span>
                                     </div>
-                                    <input type="range" id="acidityIntensity1" name="acidity_intensity" min="1" max="5" step="2" value="3" orient="horizontal">
+                                    <input type="range" id="acidityIntensity1" name="acidity_intensity" min="1" max="5" step="1" value="3" orient="horizontal">
                                 </div>
                                 <div class="attributes-grid">
                                     <div class="attribute-item white">
@@ -1685,6 +2109,14 @@ $full_name = $user['full_name'] ?? '';
 
                 <!-- Form 2 -->
                 <div class="form-page" id="form2">
+                    <!-- Validation Warning Banner -->
+                    <div id="validationWarning2" class="validation-warning-banner" style="display: none;">
+                        <div class="warning-content">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span class="warning-text">This form requires completion of all sections before submission.</span>
+                        </div>
+                    </div>
+                    
                     <form id="cuppingForm2" method="POST" action="process_cupping.php" enctype="multipart/form-data">
                         <input type="hidden" name="_subject" value="New Coffee Cupping Form Submission">
                         
@@ -1701,14 +2133,7 @@ $full_name = $user['full_name'] ?? '';
                             </div>
                             <div>
                                 <label for="tableNo2">Table no:</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" id="tableNo2" name="table_no" required style="flex: 1;">
-                                                                            <select id="batchSelect2" name="batch_number" style="width: 100px;">
-                                            <?php for ($i = 1; $i <= 10; $i++): ?>
-                                            <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
-                                            <?php endfor; ?>
-                                        </select>
-                                </div>
+                                <input type="text" id="tableNo2" name="table_no" required>
                             </div>
                         </div>
                         
@@ -1977,11 +2402,13 @@ $full_name = $user['full_name'] ?? '';
                                 <h4>ACIDITY</h4>
                                 <div class="intensity-scale">
                                     <div class="scale-labels">
-                                        <span>5</span>
-                                        <span>3</span>
                                         <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
                                     </div>
-                                    <input type="range" id="acidityIntensity2" name="acidity_intensity" min="1" max="5" step="2" value="3" orient="horizontal">
+                                    <input type="range" id="acidityIntensity2" name="acidity_intensity" min="1" max="5" step="1" value="3" orient="horizontal">
                                 </div>
                                 <div class="attributes-grid">
                                     <div class="attribute-item white">
@@ -2063,6 +2490,14 @@ $full_name = $user['full_name'] ?? '';
 
                 <!-- Form 3 -->
                 <div class="form-page" id="form3">
+                    <!-- Validation Warning Banner -->
+                    <div id="validationWarning3" class="validation-warning-banner" style="display: none;">
+                        <div class="warning-content">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span class="warning-text">This form requires completion of all sections before submission.</span>
+                        </div>
+                    </div>
+                    
                     <form id="cuppingForm3" method="POST" action="process_cupping.php" enctype="multipart/form-data">
                         <input type="hidden" name="_subject" value="New Coffee Cupping Form Submission">
                         
@@ -2079,14 +2514,7 @@ $full_name = $user['full_name'] ?? '';
                             </div>
                             <div>
                                 <label for="tableNo3">Table no:</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" id="tableNo3" name="table_no" required style="flex: 1;">
-                                    <select id="batchSelect3" name="batch_number" style="width: 100px;">
-                                        <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
+                                <input type="text" id="tableNo3" name="table_no" required>
                             </div>
                         </div>
                         
@@ -2356,11 +2784,13 @@ $full_name = $user['full_name'] ?? '';
                                 <h4>ACIDITY</h4>
                                 <div class="intensity-scale">
                                     <div class="scale-labels">
-                                        <span>5</span>
-                                        <span>3</span>
                                         <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
                                     </div>
-                                    <input type="range" id="acidityIntensity3" name="acidity_intensity" min="1" max="5" step="2" value="3" orient="horizontal">
+                                    <input type="range" id="acidityIntensity3" name="acidity_intensity" min="1" max="5" step="1" value="3" orient="horizontal">
                                 </div>
                                 <div class="attributes-grid">
                                     <div class="attribute-item white">
@@ -2442,6 +2872,14 @@ $full_name = $user['full_name'] ?? '';
 
                 <!-- Form 4 -->
                 <div class="form-page" id="form4">
+                    <!-- Validation Warning Banner -->
+                    <div id="validationWarning4" class="validation-warning-banner" style="display: none;">
+                        <div class="warning-content">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span class="warning-text">This form requires completion of all sections before submission.</span>
+                        </div>
+                    </div>
+                    
                     <form id="cuppingForm4" method="POST" action="process_cupping.php" enctype="multipart/form-data">
                         <input type="hidden" name="_subject" value="New Coffee Cupping Form Submission">
                         
@@ -2458,14 +2896,7 @@ $full_name = $user['full_name'] ?? '';
                             </div>
                             <div>
                                 <label for="tableNo4">Table no:</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" id="tableNo4" name="table_no" required style="flex: 1;">
-                                    <select id="batchSelect4" name="batch_number" style="width: 100px;">
-                                        <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
+                                <input type="text" id="tableNo4" name="table_no" required>
                             </div>
                         </div>
                         
@@ -2735,11 +3166,13 @@ $full_name = $user['full_name'] ?? '';
                                 <h4>ACIDITY</h4>
                                 <div class="intensity-scale">
                                     <div class="scale-labels">
-                                        <span>5</span>
-                                        <span>3</span>
                                         <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
                                     </div>
-                                    <input type="range" id="acidityIntensity4" name="acidity_intensity" min="1" max="5" step="2" value="3" orient="horizontal">
+                                    <input type="range" id="acidityIntensity4" name="acidity_intensity" min="1" max="5" step="1" value="3" orient="horizontal">
                                 </div>
                                 <div class="attributes-grid">
                                     <div class="attribute-item white">
@@ -2821,6 +3254,14 @@ $full_name = $user['full_name'] ?? '';
 
                 <!-- Form 5 -->
                 <div class="form-page" id="form5">
+                    <!-- Validation Warning Banner -->
+                    <div id="validationWarning5" class="validation-warning-banner" style="display: none;">
+                        <div class="warning-content">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span class="warning-text">This form requires completion of all sections before submission.</span>
+                        </div>
+                    </div>
+                    
                     <form id="cuppingForm5" method="POST" action="process_cupping.php" enctype="multipart/form-data">
                         <input type="hidden" name="_subject" value="New Coffee Cupping Form Submission">
                         
@@ -2837,14 +3278,7 @@ $full_name = $user['full_name'] ?? '';
                             </div>
                             <div>
                                 <label for="tableNo5">Table no:</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" id="tableNo5" name="table_no" required style="flex: 1;">
-                                    <select id="batchSelect5" name="batch_number" style="width: 100px;">
-                                        <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
+                                <input type="text" id="tableNo5" name="table_no" required>
                             </div>
                         </div>
                         
@@ -3114,11 +3548,13 @@ $full_name = $user['full_name'] ?? '';
                                 <h4>ACIDITY</h4>
                                 <div class="intensity-scale">
                                     <div class="scale-labels">
-                                        <span>5</span>
-                                        <span>3</span>
                                         <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
                                     </div>
-                                    <input type="range" id="acidityIntensity5" name="acidity_intensity" min="1" max="5" step="2" value="3" orient="horizontal">
+                                    <input type="range" id="acidityIntensity5" name="acidity_intensity" min="1" max="5" step="1" value="3" orient="horizontal">
                                 </div>
                                 <div class="attributes-grid">
                                     <div class="attribute-item white">
@@ -3202,6 +3638,14 @@ $full_name = $user['full_name'] ?? '';
 
                 <!-- Form 6 -->
                 <div class="form-page" id="form6">
+                    <!-- Validation Warning Banner -->
+                    <div id="validationWarning6" class="validation-warning-banner" style="display: none;">
+                        <div class="warning-content">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span class="warning-text">This form requires completion of all sections before submission.</span>
+                        </div>
+                    </div>
+                    
                     <form id="cuppingForm6" method="POST" action="process_cupping.php" enctype="multipart/form-data">
                         <input type="hidden" name="_subject" value="New Coffee Cupping Form Submission">
                         
@@ -3218,14 +3662,7 @@ $full_name = $user['full_name'] ?? '';
                             </div>
                             <div>
                                 <label for="tableNo6">Table no:</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="text" id="tableNo6" name="table_no" required style="flex: 1;">
-                                    <select id="batchSelect6" name="batch_number" style="width: 100px;">
-                                        <?php for ($i = 1; $i <= 10; $i++): ?>
-                                        <option value="<?php echo $i; ?>">Sample <?php echo $i; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
+                                <input type="text" id="tableNo6" name="table_no" required>
                             </div>
                         </div>
                         
@@ -3495,11 +3932,13 @@ $full_name = $user['full_name'] ?? '';
                                 <h4>ACIDITY</h4>
                                 <div class="intensity-scale">
                                     <div class="scale-labels">
-                                        <span>5</span>
-                                        <span>3</span>
                                         <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
                                     </div>
-                                    <input type="range" id="acidityIntensity6" name="acidity_intensity" min="1" max="5" step="2" value="3" orient="horizontal">
+                                    <input type="range" id="acidityIntensity6" name="acidity_intensity" min="1" max="5" step="1" value="3" orient="horizontal">
                                 </div>
                                 <div class="attributes-grid">
                                     <div class="attribute-item white">
@@ -3580,6 +4019,22 @@ $full_name = $user['full_name'] ?? '';
                         </div>
                     </form>
                 </div>
+                
+                <!-- Navigation Separator -->
+                <div class="navigation-separator"></div>
+                
+                <!-- Bottom Navigation Buttons -->
+                <div class="form-navigation bottom-navigation">
+                    <div class="nav-buttons">
+                        <button type="button" class="nav-btn" data-form="1" aria-label="Go to Form 1" title="Form 1">1</button>
+                        <button type="button" class="nav-btn" data-form="2" aria-label="Go to Form 2" title="Form 2">2</button>
+                        <button type="button" class="nav-btn" data-form="3" aria-label="Go to Form 3" title="Form 3">3</button>
+                        <button type="button" class="nav-btn" data-form="4" aria-label="Go to Form 4" title="Form 4">4</button>
+                        <button type="button" class="nav-btn" data-form="5" aria-label="Go to Form 5" title="Form 5">5</button>
+                        <button type="button" class="nav-btn" data-form="6" aria-label="Go to Form 6" title="Form 6">6</button>
+                    </div>
+                    <div class="form-counter">Form <span id="currentFormNumBottom">1</span> of 6</div>
+                </div>
             </div>
         </main>
     </div>
@@ -3597,17 +4052,7 @@ $full_name = $user['full_name'] ?? '';
             document.getElementById(`date${i}`).valueAsDate = new Date();
         }
         
-        // Batch selection for all forms
-        for (let i = 1; i <= totalForms; i++) {
-            const batchSelect = document.getElementById(`batchSelect${i}`);
-            const batchNumberField = document.getElementById(`batchNumber${i}`);
-            
-            if (batchSelect && batchNumberField) {
-                batchSelect.addEventListener('change', function() {
-                    batchNumberField.value = this.value;
-                });
-            }
-        }
+
         
         // Setup range inputs for intensity scales for all forms
         for (let i = 1; i <= totalForms; i++) {
@@ -3617,7 +4062,33 @@ $full_name = $user['full_name'] ?? '';
             setupIntensityRange(`acidityIntensity${i}`);
             setupIntensityRange(`sweetnessIntensity${i}`);
         }
-        
+
+        // Setup sample ID validation
+        for (let i = 1; i <= totalForms; i++) {
+            const sampleInput = document.getElementById(`sampleId${i}`);
+            if (sampleInput) {
+                sampleInput.addEventListener('input', function() {
+                    // Clear validation errors when user starts typing
+                    clearValidationErrors(i);
+                    // Update validation in real-time
+                    updateFormValidationRealTime(i);
+                });
+            }
+        }
+
+        // Setup table number validation
+        for (let i = 1; i <= totalForms; i++) {
+            const tableInput = document.getElementById(`tableNo${i}`);
+            if (tableInput) {
+                tableInput.addEventListener('input', function() {
+                    // Clear validation errors when user starts typing
+                    clearValidationErrors(i);
+                    // Update validation in real-time
+                    updateFormValidationRealTime(i);
+                });
+            }
+        }
+
         // Setup attribute selection for all forms
         setupAttributeSelection();
         
@@ -3672,37 +4143,80 @@ $full_name = $user['full_name'] ?? '';
                             }
                         }
                     }
+                    
+                    // Clear validation errors when user starts filling out the form
+                    const form = this.closest('form');
+                    if (form) {
+                        const formId = form.id.replace('cuppingForm', '');
+                        clearValidationErrors(formId);
+                        // Update validation in real-time
+                        updateFormValidationRealTime(formId);
+                    }
                 });
             });
-            
 
+            // Make attribute-item containers clickable
+            document.querySelectorAll('.attribute-item').forEach(container => {
+                container.addEventListener('click', function(e) {
+                    // Don't trigger if clicking directly on checkbox or label
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'LABEL') {
+                        return;
+                    }
+                    
+                    // Add click feedback
+                    this.classList.add('clicking');
+                    setTimeout(() => {
+                        this.classList.remove('clicking');
+                    }, 100);
+                    
+                    // Find the checkbox within this container
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        // Toggle the checkbox
+                        checkbox.checked = !checkbox.checked;
+                        
+                        // Trigger the change event to update styling
+                        const changeEvent = new Event('change', { bubbles: true });
+                        checkbox.dispatchEvent(changeEvent);
+                        
+                        // Update validation in real-time
+                        const form = this.closest('form');
+                        if (form) {
+                            const formId = form.id.replace('cuppingForm', '');
+                            updateFormValidationRealTime(formId);
+                        }
+                    }
+                });
+            });
         }
         
         // Setup form navigation
         function setupFormNavigation() {
-            const prevBtn = document.getElementById('prevForm');
-            const nextBtn = document.getElementById('nextForm');
             const currentFormNum = document.getElementById('currentFormNum');
+            const currentFormNumBottom = document.getElementById('currentFormNumBottom');
+            const navButtons = document.querySelectorAll('.nav-btn');
             
-            // Previous button click
-            prevBtn.addEventListener('click', function() {
-                if (currentForm > 1) {
-                    showForm(currentForm - 1);
-                }
-            });
-            
-            // Next button click
-            nextBtn.addEventListener('click', function() {
-                if (currentForm < totalForms) {
-                    showForm(currentForm + 1);
-                }
+            // Add click event listeners to all navigation buttons
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const formNumber = parseInt(this.getAttribute('data-form'));
+                    showForm(formNumber);
+                });
             });
             
             // Update navigation state
             function updateNavigationState() {
-                prevBtn.disabled = currentForm === 1;
-                nextBtn.disabled = currentForm === totalForms;
+                // Update active button in both top and bottom navigation
+                navButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelectorAll(`[data-form="${currentForm}"]`).forEach(btn => {
+                    btn.classList.add('active');
+                });
+                
+                // Update both counters
                 currentFormNum.textContent = currentForm;
+                currentFormNumBottom.textContent = currentForm;
             }
             
             // Show specific form
@@ -3740,9 +4254,26 @@ $full_name = $user['full_name'] ?? '';
                     console.log('Restored auto-save data:', autoSaveData);
                     // Restore form data
                     restoreFormData();
+                    
+                    // After restoring data, update validation warnings
+                    setTimeout(() => {
+                        for (let i = 1; i <= totalForms; i++) {
+                            updateFormValidationRealTime(i);
+                        }
+                    }, 100);
                 } catch (e) {
                     console.error('Error parsing auto-save data:', e);
                     autoSaveData = {};
+                    
+                    // If no saved data, show validation warnings
+                    for (let i = 1; i <= totalForms; i++) {
+                        updateFormValidationRealTime(i);
+                    }
+                }
+            } else {
+                // If no saved data, show validation warnings
+                for (let i = 1; i <= totalForms; i++) {
+                    updateFormValidationRealTime(i);
                 }
             }
         }
@@ -4042,20 +4573,26 @@ $full_name = $user['full_name'] ?? '';
             console.log('All scale labels fixed to show 1 on left, 5 on right');
         }
         
-        // Form submission handlers for all forms (now only for Form 6)
+        // Form submission handlers for all forms - ALL FORMS ARE RESTRICTED
         for (let i = 1; i <= totalForms; i++) {
             const form = document.getElementById(`cuppingForm${i}`);
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
+                    // Validate form before proceeding - ALL FORMS REQUIRE VALIDATION
+                    if (!validateForm(i)) {
+                        return false;
+                    }
+                    
                     if (i === 6) {
                         // Form 6 - Show review modal
                         showReviewModal();
                     } else {
-                        // Other forms - Just auto-save
+                        // Forms 1-5 - Auto-save after validation
                         autoSaveForm(i);
                         showAutoSaveIndicator(i);
+                        showFloatingNotification(`Form ${i} completed and saved successfully!`, 'success');
                     }
                 });
             }
@@ -4104,6 +4641,284 @@ $full_name = $user['full_name'] ?? '';
             
             return false;
         }
+
+        // Function to validate form before submission
+        function validateForm(formNumber) {
+            const form = document.getElementById(`cuppingForm${formNumber}`);
+            if (!form) return false;
+            
+            // Check if at least one checkbox is selected in each major section
+            const sections = [
+                { name: 'Fragrance/Aroma', selector: 'input[name="fragrance_attributes[]"]:checked' },
+                { name: 'Flavor', selector: 'input[name="flavor_attributes[]"]:checked' },
+                { name: 'Body', selector: 'input[name="body_type[]"]:checked' },
+                { name: 'Acidity', selector: 'input[name="acidity_type[]"]:checked' },
+                { name: 'Sweetness', selector: 'input[name="sweetness_type[]"]:checked' }
+            ];
+            
+            let missingSections = [];
+            
+            sections.forEach(section => {
+                const checkboxes = form.querySelectorAll(section.selector);
+                if (checkboxes.length === 0) {
+                    missingSections.push(section.name);
+                }
+            });
+            
+            // Check if sample ID is filled
+            const sampleId = form.querySelector('input[name="sample_id"]');
+            if (sampleId && (!sampleId.value || sampleId.value.trim() === '')) {
+                missingSections.push('Sample ID');
+            }
+            
+            // Check if table number is filled
+            const tableNo = form.querySelector('input[name="table_no"]');
+            if (tableNo && (!tableNo.value || tableNo.value.trim() === '')) {
+                missingSections.push('Table No');
+            }
+            
+            // Update warning banner visibility
+            updateValidationWarningBanner(formNumber, missingSections);
+            
+            if (missingSections.length > 0) {
+                const sectionList = missingSections.join(', ');
+                const message = `Please fill out the following sections in Form ${formNumber}:\n\n${sectionList}\n\nYou must select at least one attribute in each section and fill in all required fields to proceed.`;
+                
+                // Show validation error
+                showValidationError(formNumber, message);
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Function to show validation error
+        function showValidationError(formNumber, message) {
+            // Create or update validation error message
+            let errorDiv = document.getElementById(`validationError${formNumber}`);
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = `validationError${formNumber}`;
+                errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span class="error-message">${message}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                // Insert after the form
+                const form = document.getElementById(`cuppingForm${formNumber}`);
+                if (form) {
+                    form.parentNode.insertBefore(errorDiv, form.nextSibling);
+                }
+            } else {
+                // Update existing error message
+                errorDiv.querySelector('.error-message').textContent = message;
+                errorDiv.style.display = 'block';
+            }
+            
+            // Scroll to the error message
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                }
+            }, 8000);
+        }
+
+        // Function to clear validation errors
+        function clearValidationErrors(formNumber) {
+            const errorDiv = document.getElementById(`validationError${formNumber}`);
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+
+        // Function to update validation warning banner
+        function updateValidationWarningBanner(formNumber, missingSections) {
+            const warningBanner = document.getElementById(`validationWarning${formNumber}`);
+            if (!warningBanner) return;
+            
+            if (missingSections.length > 0) {
+                // Show warning banner
+                warningBanner.style.display = 'block';
+                
+                // Update warning text with specific missing sections
+                const warningText = warningBanner.querySelector('.warning-text');
+                if (warningText) {
+                    const sectionList = missingSections.join(', ');
+                    warningText.textContent = `This form requires completion of: ${sectionList}`;
+                }
+            } else {
+                // Hide warning banner when form is complete
+                warningBanner.style.display = 'none';
+            }
+        }
+
+
+
+        // Function to update validation in real-time
+        function updateFormValidationRealTime(formNumber) {
+            const form = document.getElementById(`cuppingForm${formNumber}`);
+            if (!form) return;
+            
+            // Check if this form has saved data - if it does, don't show warnings
+            if (autoSaveData[`form${formNumber}`] && hasFormData(autoSaveData[`form${formNumber}`])) {
+                // Form has data, hide warning banner
+                updateValidationWarningBanner(formNumber, []);
+                clearValidationErrors(formNumber);
+                return;
+            }
+            
+            // Also check if the form is currently complete (user might have filled it after page load)
+            const sections = [
+                { name: 'Fragrance/Aroma', selector: 'input[name="fragrance_attributes[]"]:checked' },
+                { name: 'Flavor', selector: 'input[name="flavor_attributes[]"]:checked' },
+                { name: 'Body', selector: 'input[name="body_type[]"]:checked' },
+                { name: 'Acidity', selector: 'input[name="acidity_type[]"]:checked' },
+                { name: 'Sweetness', selector: 'input[name="sweetness_type[]"]:checked' }
+            ];
+            
+            let missingSections = [];
+            sections.forEach(section => {
+                const checkboxes = form.querySelectorAll(section.selector);
+                if (checkboxes.length === 0) {
+                    missingSections.push(section.name);
+                }
+            });
+            
+            // Check sample ID
+            const sampleId = form.querySelector('input[name="sample_id"]');
+            if (sampleId && (!sampleId.value || sampleId.value.trim() === '')) {
+                missingSections.push('Sample ID');
+            }
+            
+            // Check table number
+            const tableNo = form.querySelector('input[name="table_no"]');
+            if (tableNo && (!tableNo.value || tableNo.value.trim() === '')) {
+                missingSections.push('Table No');
+            }
+            
+            // Update warning banner
+            updateValidationWarningBanner(formNumber, missingSections);
+            
+            // Clear validation errors if form is now complete
+            if (missingSections.length === 0) {
+                clearValidationErrors(formNumber);
+            }
+        }
+
+        // Function to get form completion status
+        function getFormCompletionStatus(formNumber) {
+            const form = document.getElementById(`cuppingForm${formNumber}`);
+            if (!form) return { completed: false, missing: [] };
+            
+            const sections = [
+                { name: 'Fragrance/Aroma', selector: 'input[name="fragrance_attributes[]"]:checked' },
+                { name: 'Flavor', selector: 'input[name="flavor_attributes[]"]:checked' },
+                { name: 'Body', selector: 'input[name="body_type[]"]:checked' },
+                { name: 'Acidity', selector: 'input[name="acidity_type[]"]:checked' },
+                { name: 'Sweetness', selector: 'input[name="sweetness_type[]"]:checked' }
+            ];
+            
+            let missing = [];
+            sections.forEach(section => {
+                const checkboxes = form.querySelectorAll(section.selector);
+                if (checkboxes.length === 0) {
+                    missing.push(section.name);
+                }
+            });
+            
+            // Check sample ID
+            const sampleId = form.querySelector('input[name="sample_id"]');
+            if (sampleId && (!sampleId.value || sampleId.value.trim() === '')) {
+                missing.push('Sample ID');
+            }
+            
+            // Check table number
+            const tableNo = form.querySelector('input[name="table_no"]');
+            if (tableNo && (!tableNo.value || tableNo.value.trim() === '')) {
+                missing.push('Table No');
+            }
+            
+            return {
+                completed: missing.length === 0,
+                missing: missing
+            };
+        }
+
+        // Function to show completion summary
+        function showCompletionSummary() {
+            let summary = 'Form Completion Summary:\n\n';
+            let incompleteForms = 0;
+            
+            for (let i = 1; i <= totalForms; i++) {
+                const status = getFormCompletionStatus(i);
+                if (!status.completed) {
+                    incompleteForms++;
+                    summary += `Form ${i}: Missing - ${status.missing.join(', ')}\n`;
+                } else {
+                    summary += `Form ${i}: ✓ Complete\n`;
+                }
+                summary += '\n';
+            }
+            
+            if (incompleteForms > 0) {
+                summary += `\nPlease complete ${incompleteForms} form(s) before final submission.`;
+                alert(summary);
+            }
+        }
+
+        // Function to show comprehensive validation status
+        function showComprehensiveValidationStatus() {
+            let statusHTML = '<div class="validation-status-summary">';
+            statusHTML += '<h4><i class="fas fa-clipboard-check me-2"></i>Form Validation Status</h4>';
+            
+            for (let i = 1; i <= totalForms; i++) {
+                const status = getFormCompletionStatus(i);
+                const statusClass = status.completed ? 'status-complete' : 'status-incomplete';
+                const statusIcon = status.completed ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+                const statusText = status.completed ? 'Complete' : 'Incomplete';
+                
+                statusHTML += `
+                    <div class="validation-status-item ${statusClass}">
+                        <div class="status-header">
+                            <i class="${statusIcon} me-2"></i>
+                            <strong>Form ${i}</strong> - ${statusText}
+                        </div>
+                `;
+                
+                if (!status.completed && status.missing.length > 0) {
+                    statusHTML += '<div class="missing-items">';
+                    statusHTML += '<strong>Missing:</strong> ';
+                    statusHTML += status.missing.join(', ');
+                    statusHTML += '</div>';
+                }
+                
+                statusHTML += '</div>';
+            }
+            
+            statusHTML += '</div>';
+            
+            // Show in a modal or alert
+            const modal = document.createElement('div');
+            modal.className = 'validation-status-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Form Validation Status</h3>
+                        <button class="close-btn" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        ${statusHTML}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
         
         // Function to show review modal
         function showReviewModal() {
@@ -4118,7 +4933,6 @@ $full_name = $user['full_name'] ?? '';
             
             // Add event listeners
             document.getElementById('closeReviewModal').addEventListener('click', hideReviewModal);
-            document.getElementById('editFormsBtn').addEventListener('click', hideReviewModal);
             document.getElementById('confirmSubmitBtn').addEventListener('click', submitAllForms);
             
             // Close modal when clicking outside
@@ -4342,6 +5156,22 @@ $full_name = $user['full_name'] ?? '';
         function submitAllForms() {
             // Hide review modal first
             hideReviewModal();
+            
+            // Validate all forms before submission
+            let invalidForms = [];
+            for (let i = 1; i <= totalForms; i++) {
+                if (autoSaveData[`form${i}`] && hasFormData(autoSaveData[`form${i}`])) {
+                    if (!validateForm(i)) {
+                        invalidForms.push(i);
+                    }
+                }
+            }
+            
+            if (invalidForms.length > 0) {
+                const formList = invalidForms.join(', ');
+                alert(`Please complete the following forms before submission: ${formList}\n\nEach form must have at least one attribute selected in each section.`);
+                return;
+            }
             
             // Show loading state
             const submitBtn = document.getElementById('submitBtn6');

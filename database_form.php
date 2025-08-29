@@ -14,36 +14,26 @@ $page = max(1, $_GET['page'] ?? 1);
 $per_page = 10;
 $offset = ($page - 1) * $per_page;
 
-// Build base query
-        $query = "SELECT 
-            cf.id,
-            cf.user_id,
-            u.full_name,
-            cf.user_name,
-            DATE_FORMAT(cf.form_date, '%b %d, %Y') as formatted_date,
-            cf.form_number,
-            cf.table_no,
-            cf.sample_id,
-            cf.fragrance_intensity,
-            cf.flavor_intensity,
-            cf.body_intensity,
-            cf.acidity_intensity,
-            cf.sweetness_intensity,
-            COUNT(*) OVER() as total_count
-          FROM cupping_forms cf
-          LEFT JOIN users u ON cf.user_id = u.id";
+// Build base query to get unique users with their submission counts
+$query = "SELECT 
+    u.id as user_id,
+    u.full_name,
+    COUNT(cf.id) as submission_count,
+    MIN(cf.submission_date) as first_submission,
+    MAX(cf.submission_date) as last_submission,
+    COUNT(*) OVER() as total_count
+FROM users u
+LEFT JOIN cupping_forms cf ON u.id = cf.user_id
+WHERE u.role = 'user'";
 
 // Add search conditions
 if (!empty($search)) {
-    $query .= " WHERE 
-                cf.user_name LIKE ? OR 
-                u.full_name LIKE ? OR 
-                cf.table_no LIKE ?";
+    $query .= " AND u.full_name LIKE ?";
     $search_param = "%$search%";
 }
 
 // Add pagination
-$query .= " ORDER BY cf.submission_date DESC LIMIT ? OFFSET ?";
+$query .= " GROUP BY u.id, u.full_name ORDER BY last_submission DESC LIMIT ? OFFSET ?";
 
 // Prepare and execute query
 $stmt = $conn->prepare($query);
@@ -52,7 +42,7 @@ if (!$stmt) {
 }
 
 if (!empty($search)) {
-    $stmt->bind_param("sssii", $search_param, $search_param, $search_param, $per_page, $offset);
+    $stmt->bind_param("sii", $search_param, $per_page, $offset);
 } else {
     $stmt->bind_param("ii", $per_page, $offset);
 }
@@ -178,12 +168,11 @@ $total_count = 0;
                             <table class="table table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>ID</th>
+                                        <th>User ID</th>
                                         <th>Full Name</th>
-                                        <th>Date</th>
-                                        <th>Form #</th>
-                                        <th>Table</th>
-                                        <th>Sample ID</th>
+                                        <th>Total Submissions</th>
+                                        <th>First Submission</th>
+                                        <th>Last Submission</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -191,20 +180,18 @@ $total_count = 0;
                                     <?php while ($row = $result->fetch_assoc()): 
                                         $total_count = $row['total_count'] ?? 0; ?>
                                     <tr>
-                                        <td><?= $row['id'] ?></td>
+                                        <td><?= $row['user_id'] ?></td>
                                         <td><?= htmlspecialchars($row['full_name'] ?? 'N/A') ?></td>
-                                        <td><?= $row['formatted_date'] ?></td>
-                                        <td><?= $row['form_number'] ?></td>
-                                        <td><?= htmlspecialchars($row['table_no']) ?></td>
-                                        <td><?= htmlspecialchars($row['sample_id'] ?? 'N/A') ?></td>
+                                        <td>
+                                            <span class="badge bg-primary"><?= $row['submission_count'] ?></span>
+                                        </td>
+                                        <td><?= $row['first_submission'] ? date('M d, Y', strtotime($row['first_submission'])) : 'N/A' ?></td>
+                                        <td><?= $row['last_submission'] ? date('M d, Y', strtotime($row['last_submission'])) : 'N/A' ?></td>
                                         <td class="action-buttons">
-                                            <button class="btn btn-sm btn-primary view-details" 
-                                                    data-id="<?= $row['id'] ?>">
-                                                <i class="fas fa-eye"></i> View
-                                            </button>
-                                            <button class="btn btn-sm btn-danger delete-entry" 
-                                                    data-id="<?= $row['id'] ?>">
-                                                <i class="fas fa-trash"></i>
+                                            <button class="btn btn-sm btn-primary view-all-submits" 
+                                                    data-user-id="<?= $row['user_id'] ?>"
+                                                    data-user-name="<?= htmlspecialchars($row['full_name']) ?>">
+                                                <i class="fas fa-list"></i> View All Submits
                                             </button>
                                         </td>
                                     </tr>
@@ -246,15 +233,15 @@ $total_count = 0;
         </main>
     </div>
 
-    <!-- View Details Modal -->
-    <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- View All Submissions Modal -->
+    <div class="modal fade" id="submissionsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Cupping Form Details</h5>
+                    <h5 class="modal-title">All Submissions for <span id="userNameDisplay"></span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="modalDetailsContent">
+                <div class="modal-body" id="modalSubmissionsContent">
                     <!-- Content loaded via AJAX -->
                 </div>
                 <div class="modal-footer">
@@ -290,41 +277,49 @@ $total_count = 0;
     <script src="loading.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // View details handler
-        document.querySelectorAll('.view-details').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const formId = this.getAttribute('data-id');
-        const modalContent = document.getElementById('modalDetailsContent');
-        
-        // Show loading state
+        // View all submissions handler
+        document.querySelectorAll('.view-all-submits').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-user-id');
+                const userName = this.getAttribute('data-user-name');
+                const modalContent = document.getElementById('modalSubmissionsContent');
+                const userNameDisplay = document.getElementById('userNameDisplay');
+                
+                // Update modal title
+                userNameDisplay.textContent = userName;
+                
+                        // Show loading state
         modalContent.innerHTML = `
             <div class="text-center p-4">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <p class="mt-2">Loading details...</p>
+                <p class="mt-2">Loading submissions...</p>
             </div>
         `;
         
-        const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        const modal = new bootstrap.Modal(document.getElementById('submissionsModal'));
         modal.show();
         
-        // Fetch the details
-        fetch(`get_cupping_details.php?id=${formId}`)
+        // Fetch all submissions for this user
+        fetch(`get_user_submissions.php?user_id=${userId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
-            .then(data => {
-                if (data.success) {
-                    modalContent.innerHTML = data.content;
-                } else {
+                         .then(data => {
+                 if (data.success) {
+                     modalContent.innerHTML = data.content;
+                     
+                     // Add event listeners for the dynamically loaded buttons
+                     addModalEventListeners();
+                 } else {
                     modalContent.innerHTML = `
                         <div class="alert alert-danger">
-                            <h5>Error Loading Details</h5>
-                            <p>${data.error || 'Failed to load form details'}</p>
+                            <h5>Error Loading Submissions</h5>
+                            <p>${data.error || 'Failed to load user submissions'}</p>
                             <p>Please try again or contact support.</p>
                         </div>
                     `;
@@ -334,28 +329,105 @@ $total_count = 0;
                 console.error('Error:', error);
                 modalContent.innerHTML = `
                     <div class="alert alert-danger">
-                        <h5>Error Loading Details</h5>
+                        <h5>Error Loading Submissions</h5>
                         <p>${error.message}</p>
                         <p>Please try again or contact support.</p>
                     </div>
                 `;
             });
-    });
-});
+         });
+ });
 
-        // In database_form.php, update the delete handler
-// Delete handler
-let deleteId = null;
-document.querySelectorAll('.delete-entry').forEach(btn => {
-    btn.addEventListener('click', function() {
-        deleteId = this.getAttribute('data-id');
-        document.getElementById('deleteIdInput').value = deleteId;
-        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
-    });
-});
+ // Function to add event listeners for modal buttons
+ function addModalEventListeners() {
+     // View details handler for submissions in modal
+     document.querySelectorAll('.view-details').forEach(btn => {
+         btn.addEventListener('click', function() {
+             const formId = this.getAttribute('data-id');
+             const modalContent = document.getElementById('modalSubmissionsContent');
+             
+             // Show loading state
+             modalContent.innerHTML = `
+                 <div class="text-center p-4">
+                     <div class="spinner-border text-primary" role="status">
+                         <span class="visually-hidden">Loading...</span>
+                     </div>
+                     <p class="mt-2">Loading details...</p>
+                 </div>
+             `;
+             
+             // Fetch the details
+             fetch(`get_cupping_details.php?id=${formId}`)
+                 .then(response => {
+                     if (!response.ok) {
+                         throw new Error(`HTTP error! status: ${response.status}`);
+                     }
+                     return response.json();
+                 })
+                 .then(data => {
+                     if (data.success) {
+                         modalContent.innerHTML = data.content;
+                     } else {
+                         modalContent.innerHTML = `
+                             <div class="alert alert-danger">
+                                 <h5>Error Loading Details</h5>
+                                 <p>${data.error || 'Failed to load form details'}</p>
+                                 <p>Please try again or contact support.</p>
+                             </div>
+                         `;
+                     }
+                 })
+                 .catch(error => {
+                     console.error('Error:', error);
+                     modalContent.innerHTML = `
+                         <div class="alert alert-danger">
+                             <h5>Error Loading Details</h5>
+                             <p>${error.message}</p>
+                             <p>Please try again or contact support.</p>
+                         </div>
+                     `;
+                 });
+         });
+     });
 
-// Handle form submission
+     // Delete handler for submissions in modal
+     document.querySelectorAll('.delete-entry').forEach(btn => {
+         btn.addEventListener('click', function() {
+             const formId = this.getAttribute('data-id');
+             if (confirm('Are you sure you want to delete this submission? This action cannot be undone.')) {
+                 // Create form data
+                 const formData = new FormData();
+                 formData.append('id', formId);
+                 
+                 fetch('delete_cupping.php', {
+                     method: 'POST',
+                     body: formData
+                 })
+                 .then(response => {
+                     if (!response.ok) {
+                         throw new Error('Network response was not ok');
+                     }
+                     return response.json();
+                 })
+                 .then(data => {
+                     if (data.success) {
+                         // Remove the row from the table
+                         this.closest('tr').remove();
+                         alert('Submission deleted successfully!');
+                     } else {
+                         alert('Error: ' + (data.message || 'Failed to delete'));
+                     }
+                 })
+                 .catch(error => {
+                     console.error('Error:', error);
+                     alert('Error deleting submission. Please try again.');
+                 });
+             }
+         });
+     });
+ }
+
+ // Handle form submission
 document.getElementById('deleteForm').addEventListener('submit', function(e) {
     e.preventDefault();
     

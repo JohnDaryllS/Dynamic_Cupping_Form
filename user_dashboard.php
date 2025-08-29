@@ -122,6 +122,83 @@ $full_name = $user['full_name'] ?? '';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* Sticky Header Styles */
+        .sticky-form-header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            background: linear-gradient(135deg, #6F4E37, #8B4513);
+            color: white;
+            padding: 10px 20px;
+            z-index: 1001;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        /* Mobile responsive for sticky header */
+        @media (max-width: 768px) {
+            .sticky-form-header {
+                left: 0;
+            }
+        }
+
+        .sticky-form-header.show {
+            transform: translateY(0);
+        }
+
+        .sticky-form-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .sticky-form-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sticky-form-item i {
+            font-size: 16px;
+        }
+
+        .sticky-form-item strong {
+            font-weight: 600;
+        }
+
+        .sticky-form-item span {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .sticky-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .sticky-close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Adjust main content to account for sticky header */
+        .main-content {
+            padding-top: 20px;
+        }
+
         .header-info {
             display: flex;
             justify-content: space-between;
@@ -1616,6 +1693,30 @@ $full_name = $user['full_name'] ?? '';
         <div class="loading-text">Loading...</div>
     </div>
 
+    <!-- Sticky Form Header -->
+    <div class="sticky-form-header" id="stickyFormHeader">
+        <div class="sticky-form-info">
+            <div class="sticky-form-item">
+                <i class="fas fa-file-alt"></i>
+                <strong>Form:</strong>
+                <span id="stickyFormNumber">1</span>
+            </div>
+            <div class="sticky-form-item">
+                <i class="fas fa-table"></i>
+                <strong>Table:</strong>
+                <span id="stickyTableNo">-</span>
+            </div>
+            <div class="sticky-form-item">
+                <i class="fas fa-tag"></i>
+                <strong>Sample ID:</strong>
+                <span id="stickySampleId">-</span>
+            </div>
+        </div>
+        <button class="sticky-close-btn" id="stickyCloseBtn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
     <div class="user-container">
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
@@ -1691,7 +1792,7 @@ $full_name = $user['full_name'] ?? '';
                             <i class="fas fa-save me-2"></i>
                             <span>Auto-save is <span id="autoSaveStatus" class="status-active">ACTIVE</span></span>
                         </div>
-                        <div class="status-controls">
+                        <div class="status-controls" style="display: none;">
                             <button type="button" onclick="saveAllForms()" class="btn btn-outline-primary btn-sm">
                                 <i class="fas fa-save me-2"></i> Save All Forms
                             </button>
@@ -4233,12 +4334,20 @@ $full_name = $user['full_name'] ?? '';
                 // Update navigation state
                 updateNavigationState();
                 
+                // Update sticky header if visible
+                if (typeof updateStickyHeader === 'function' && stickyHeaderVisible) {
+                    updateStickyHeader();
+                }
+                
                 // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             
             // Initialize navigation state
             updateNavigationState();
+            
+            // Initialize sticky header functionality
+            addStickyHeaderListeners();
         }
         
         // Auto-save functionality for all forms
@@ -5345,6 +5454,80 @@ $full_name = $user['full_name'] ?? '';
                 showFloatingNotification('All form data cleared successfully!', 'success');
             }
         }
+
+        // Sticky Header Functionality
+        let stickyHeaderVisible = false;
+        let scrollThreshold = 200; // Show sticky header after scrolling 200px
+
+        // Function to update sticky header content
+        function updateStickyHeader() {
+            const currentForm = document.querySelector('.form-page.active');
+            if (!currentForm) return;
+
+            const formNumber = currentForm.id.replace('form', '');
+            const tableNoInput = document.getElementById(`tableNo${formNumber}`);
+            const sampleIdInput = document.getElementById(`sampleId${formNumber}`);
+
+            // Update sticky header content
+            document.getElementById('stickyFormNumber').textContent = formNumber;
+            document.getElementById('stickyTableNo').textContent = tableNoInput ? (tableNoInput.value || '-') : '-';
+            document.getElementById('stickySampleId').textContent = sampleIdInput ? (sampleIdInput.value || '-') : '-';
+        }
+
+        // Function to show/hide sticky header
+        function toggleStickyHeader(show) {
+            const stickyHeader = document.getElementById('stickyFormHeader');
+            if (show && !stickyHeaderVisible) {
+                stickyHeader.classList.add('show');
+                stickyHeaderVisible = true;
+            } else if (!show && stickyHeaderVisible) {
+                stickyHeader.classList.remove('show');
+                stickyHeaderVisible = false;
+            }
+        }
+
+        // Scroll event listener
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > scrollThreshold) {
+                updateStickyHeader();
+                toggleStickyHeader(true);
+            } else {
+                toggleStickyHeader(false);
+            }
+        });
+
+        // Close button functionality
+        document.getElementById('stickyCloseBtn').addEventListener('click', function() {
+            toggleStickyHeader(false);
+        });
+
+        // Update sticky header when form changes
+        function updateStickyHeaderOnFormChange() {
+            if (stickyHeaderVisible) {
+                updateStickyHeader();
+            }
+        }
+
+        // Add event listeners for form inputs
+        function addStickyHeaderListeners() {
+            for (let i = 1; i <= totalForms; i++) {
+                const tableNoInput = document.getElementById(`tableNo${i}`);
+                const sampleIdInput = document.getElementById(`sampleId${i}`);
+                
+                if (tableNoInput) {
+                    tableNoInput.addEventListener('input', updateStickyHeaderOnFormChange);
+                }
+                if (sampleIdInput) {
+                    sampleIdInput.addEventListener('input', updateStickyHeaderOnFormChange);
+                }
+            }
+        }
+
+
+
+
 
     });
     </script>

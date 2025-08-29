@@ -242,8 +242,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
                 <div class="card shadow-sm mt-4">
                     <div class="card-header">
                         <h3 class="card-title">User List</h3>
+                        <?php
+                        // Get count of users excluding admin
+                        $user_count_query = $conn->query("SELECT COUNT(*) as user_count FROM users WHERE role != 'admin'");
+                        $user_count = $user_count_query->fetch_assoc()['user_count'];
+                        ?>
+                        <p class="card-subtitle text-muted">
+                            <i class="fas fa-users me-1"></i>
+                            Total Registered Users: <strong><?php echo $user_count; ?></strong> (excluding admin)
+                        </p>
                     </div>
                     <div class="card-body">
+                        <!-- Search Bar -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="userSearchInput" placeholder="Search by name or email...">
+                                    <button class="btn btn-outline-secondary" type="button" id="clearSearchBtn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-end">
+                                    <span class="text-muted" id="searchResultsCount"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="table-responsive">
                             <table class="table table-hover">
                             <thead>
@@ -603,6 +632,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
                     icon.classList.replace('fa-eye-slash', 'fa-eye');
                 }
             });
+        });
+
+        // User Search Functionality
+        const searchInput = document.getElementById('userSearchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const searchResultsCount = document.getElementById('searchResultsCount');
+        const userTable = document.querySelector('.table tbody');
+        const allUserRows = Array.from(userTable.querySelectorAll('tr'));
+
+        // Search function
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            allUserRows.forEach(row => {
+                const nameCell = row.querySelector('td:nth-child(2)'); // Full Name column
+                const emailCell = row.querySelector('td:nth-child(3)'); // Email column
+                
+                if (nameCell && emailCell) {
+                    const name = nameCell.textContent.toLowerCase();
+                    const email = emailCell.textContent.toLowerCase();
+                    
+                    if (searchTerm === '' || name.includes(searchTerm) || email.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+
+            // Update results count
+            if (searchTerm === '') {
+                searchResultsCount.textContent = '';
+            } else {
+                searchResultsCount.textContent = `${visibleCount} result(s) found`;
+            }
+        }
+
+        // Search input event listener
+        searchInput.addEventListener('input', performSearch);
+
+        // Clear search button
+        clearSearchBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch();
+            searchInput.focus();
+        });
+
+        // Keyboard shortcuts
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                performSearch();
+            }
         });
     </script>
 </body>
